@@ -8,75 +8,18 @@
         body {
             font-family: 'Arial', sans-serif;
             margin: 20px;
-            background-color: #d4edda;
+            background-color: #f0f8ff; /* Changed background color */
             text-align: center;
             color: #333;
         }
+
         h1 {
-            color: #4d604d;
+            color: #4d604d; 
             margin-bottom: 20px;
-            cursor: pointer;
+            cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
         }
-        #search {
-            margin-bottom: 20px;
-            padding: 10px;
-            width: 50%;
-            max-width: 300px;
-            border: 2px solid #4d604d;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        .button {
-            padding: 10px 20px;
-            margin: 10px;
-            cursor: pointer;
-            background-color: #4d604d;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        .button:hover {
-            background-color: #5a745a;
-            transform: translateY(-2px);
-        }
-        table {
-            border-collapse: collapse;
-            margin-top: 20px;
-            width: 100%;
-            background-color: #ffffff;
-            border: 1px solid #4d604d;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        th, td {
-            border: 1px solid #4d604d;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #4d604d;
-            color: white;
-        }
-        tr:hover {
-            background-color: #f2f2f2;
-        }
-        #attributes {
-            max-width: 900px;
-            margin: 0 auto;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        .branch-dropdown a:hover {
-            background-color: #ddd; /* Light gray on hover */
-        }
-        .branch-dropdown a {
-            display: block;
-            padding: 5px 10px;
-            color: #333;
-            text-decoration: none;
-        }.branch-dropdown {
+
+        .branch-dropdown {
             display: none; /* Hidden by default */
             position: absolute;
             background-color: white;
@@ -85,6 +28,72 @@
             padding: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000; /* Ensure dropdown appears on top */
+        }
+
+        .branch-dropdown a {
+            display: block;
+            padding: 5px 10px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .branch-dropdown a:hover {
+            background-color: #ddd; /* Light gray on hover */
+        }
+
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #4CAF50; /* Green button color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px; /* Increase button font size */
+            transition: background-color 0.3s; /* Smooth background color transition */
+        }
+
+        .button:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+        #search {
+            margin-bottom: 20px;
+            padding: 10px;
+            width: 50%;
+            max-width: 300px;
+            border: 2px solid #4CAF50; /* Green border */
+            border-radius: 5px; /* Rounded corners */
+            font-size: 16px; /* Increase input font size */
+        }
+
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+            width: 100%;
+            background-color: white;
+            border-radius: 8px; /* Rounded corners for table */
+            overflow: hidden; /* Prevent overflow for rounded corners */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+        }
+
+        th, td {
+            border: 1px solid #ddd; /* Light border for table cells */
+            padding: 12px; /* Increased padding for cells */
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50; 
+            color: white; /* White text for header */
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
         }
     </style>
 </head>
@@ -97,6 +106,7 @@
         <a href="aiml.html">AIML</a>
         <a href="csd.html">CSD</a>
     </div>
+
     <input type="text" id="search" placeholder="Search by RegdNo" oninput="searchStudent()">
     <div>
         <button class="button" onclick="updateBranch('CAI', 'technical')">Technical</button>
@@ -106,7 +116,7 @@
     <div id="attributes"></div>
     
     <script>
-        let students = []; 
+        let students = [];
         let currentBranch = 'CAI'; 
         let currentAttendanceType = 'technical'; 
 
@@ -178,6 +188,7 @@
                 console.error('Error fetching attendance:', error);
             }
         }
+
         function toggleDropdown() {
             const dropdown = document.getElementById('branch-dropdown');
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';

@@ -148,6 +148,69 @@ app.get('/cai_students', (req, res) => {
             technicalAttendance: student.technicalAttendance,
             nonTechnicalAttendance: student.nonTechnicalAttendance
         }));
+        
+
+        return res.status(200).json(attendanceData); // Send the results as JSON
+    });
+});
+app.get('/csm_attendance', (req, res) => {
+    const { branch, attendanceType } = req.query; 
+    const query = `SELECT regdNo, name, technicalAttendance, nonTechnicalAttendance FROM csm_attendance WHERE branch = ?`;
+
+    db.query(query, [branch], (err, results) => {
+        if (err) {
+            console.error('Error fetching attendance data:', err);
+            return res.status(500).json({ error: 'Error fetching data' });
+        }
+
+        // Map results to include only required fields
+        const attendanceData = results.map(student => ({
+            regdNo: student.regdNo,
+            name: student.name,
+            technicalAttendance: student.technicalAttendance,
+            nonTechnicalAttendance: student.nonTechnicalAttendance
+        }));
+        
+
+        return res.status(200).json(attendanceData); // Send the results as JSON
+    });
+});
+app.get('/csd_attendance', (req, res) => {
+    const { branch, attendanceType } = req.query; // Get branch and attendance type from query
+    const query = `SELECT regdNo, name, technicalAttendance, nonTechnicalAttendance FROM csd_attendance WHERE branch = ?`;
+
+    db.query(query, [branch], (err, results) => {
+        if (err) {
+            console.error('Error fetching attendance data:', err);
+            return res.status(500).json({ error: 'Error fetching data' });
+        }
+        const attendanceData = results.map(student => ({
+            regdNo: student.regdNo,
+            name: student.name,
+            technicalAttendance: student.technicalAttendance,
+            nonTechnicalAttendance: student.nonTechnicalAttendance
+        }));
+        return res.status(200).json(attendanceData); // Send the results as JSON
+    });
+});
+app.get('/aiml_attendance', (req, res) => {
+    const { branch, attendanceType } = req.query; // Get branch and attendance type from query
+    const query = `SELECT regdNo, name, technicalAttendance, nonTechnicalAttendance FROM aiml_attendance WHERE branch = ?`;
+
+    db.query(query, [branch], (err, results) => {
+        if (err) {
+            console.error('Error fetching attendance data:', err);
+            return res.status(500).json({ error: 'Error fetching data' });
+        }
+
+        // Map results to include only required fields
+        const attendanceData = results.map(student => ({
+            regdNo: student.regdNo,
+            name: student.name,
+            technicalAttendance: student.technicalAttendance,
+            nonTechnicalAttendance: student.nonTechnicalAttendance
+        }));
+        
 
         return res.status(200).json(attendanceData); // Send the results as JSON
     });

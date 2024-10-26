@@ -6,52 +6,19 @@
     <title id="title">CSD</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 20px;
-            background-color: #d4edda; /* Light green background */
-            text-align: center; /* Center text */
-            position: relative; /* Allow absolute positioning of dropdown */
-        }
-        .button {
-            padding: 10px 20px;
-            margin: 10px;
-            cursor: pointer;
-            background-color: #4d604d; /* Grey button color */
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        table {
-            border-collapse: collapse;
-            margin-top: 20px;
-            width: 100%;
-            background-color: white; /* White table background */
-            border: 1px solid black; /* Black border */
-        }
-        th, td {
-            border: 1px solid black; /* Black border for cells */
-            padding: 8px;
-            text-align: left;
-        }
-        #search {
-            margin-bottom: 20px;
-            padding: 10px;
-            width: 50%; /* Centered width */
-            max-width: 300px; /* Maximum width */
-            display: inline-block; /* Inline-block to center */
-        }
-        h1 {
-            cursor: pointer;
-        }
-        .branch-dropdown a:hover {
-            background-color: #ddd; /* Light gray on hover */
-        }
-        .branch-dropdown a {
-            display: block;
-            padding: 5px 10px;
+            background-color: #f0f8ff; 
+            text-align: center;
             color: #333;
-            text-decoration: none;
         }
+
+        h1 {
+            color: #4d604d; 
+            margin-bottom: 20px;
+            cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+        }
+
         .branch-dropdown {
             display: none; /* Hidden by default */
             position: absolute;
@@ -62,6 +29,72 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000; /* Ensure dropdown appears on top */
         }
+
+        .branch-dropdown a {
+            display: block;
+            padding: 5px 10px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .branch-dropdown a:hover {
+            background-color: #ddd; /* Light gray on hover */
+        }
+
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #4CAF50; /* Green button color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px; /* Increase button font size */
+            transition: background-color 0.3s; /* Smooth background color transition */
+        }
+
+        .button:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+        #search {
+            margin-bottom: 20px;
+            padding: 10px;
+            width: 50%;
+            max-width: 300px;
+            border: 2px solid #4CAF50; /* Green border */
+            border-radius: 5px; /* Rounded corners */
+            font-size: 16px; /* Increase input font size */
+        }
+
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+            width: 100%;
+            background-color: white; /* White table background */
+            border-radius: 8px; /* Rounded corners for table */
+            overflow: hidden; /* Prevent overflow for rounded corners */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+        }
+
+        th, td {
+            border: 1px solid #ddd; /* Light border for table cells */
+            padding: 12px; /* Increased padding for cells */
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50; 
+            color: white; /* White text for header */
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
     </style>
 </head>
 <body>
@@ -70,44 +103,45 @@
     <div class="branch-dropdown" id="branch-dropdown">
         <a href="cai.html">CAI</a>
         <a href="csm.html">CSM</a>
-        <a href="aiml.html">AIML</a>
         <a href="cse.html">CSE</a>
+        <a href="aiml.html">AIML</a>
     </div>
-    
+
     <input type="text" id="search" placeholder="Search by RegdNo" oninput="searchStudent()">
     <div>
-        <button class="button" onclick="updateBranch('Technical')">Technical</button>
-        <button class="button" onclick="updateBranch('Non-Technical')">Non-Technical</button>
+        <button class="button" onclick="updateBranch('CSD', 'technical')">Technical</button>
+        <button class="button" onclick="updateBranch('CSD', 'nonTechnical')">Non-Technical</button>
     </div>
     
     <div id="attributes"></div>
-
+    
     <script>
-        // Function to toggle the dropdown visibility
-        function toggleDropdown() {
-            const dropdown = document.getElementById('branch-dropdown');
-            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        let students = [];
+        let currentBranch = 'CSD'; 
+        let currentAttendanceType = 'technical'; 
+
+        async function fetchAttendance() {
+            const response = await fetch('/csd_attendance?branch=' + currentBranch + '&attendanceType=' + currentAttendanceType);
+            const data = await response.json();
+            return data;
         }
 
-        // Close dropdown if clicking outside
-        window.onclick = function(event) {
-            const dropdown = document.getElementById('branch-dropdown');
-            if (!event.target.matches('#title') && !event.target.closest('.branch-dropdown')) {
-                dropdown.style.display = 'none';
-            }
-        };
+        async function updateBranch(branch, attendanceType) {
+            currentBranch = branch;
+            currentAttendanceType = attendanceType;
+            document.getElementById("title").innerHTML = branch;
 
-        // Sample student data
-        const students = [
-            { regdNo: '301', name: 'Emily', technicalAttendance: '88%', nonTechnicalAttendance: '80%' },
-            { regdNo: '302', name: 'Frank', technicalAttendance: '78%', nonTechnicalAttendance: '90%' }
-        ];
-        
-        let currentBranch = ''; // Start with no current branch
+            try {
+                students = await fetchAttendance(); 
+                showAttributes(); 
+            } catch (error) {
+                console.error('Error fetching attendance:', error);
+            }
+        }
 
         function showAttributes() {
             const attributesDiv = document.getElementById('attributes');
-            attributesDiv.innerHTML = ` 
+            attributesDiv.innerHTML = `
                 <table>
                     <tr>
                         <th>RegdNo</th>
@@ -118,7 +152,7 @@
                         <tr>
                             <td>${student.regdNo}</td>
                             <td>${student.name}</td>
-                            <td>${currentBranch === 'Technical' ? student.technicalAttendance : student.nonTechnicalAttendance}</td>
+                            <td>${currentAttendanceType === 'technical' ? student.technicalAttendance : student.nonTechnicalAttendance}</td>
                         </tr>
                     `).join('')}
                 </table>
@@ -143,21 +177,24 @@
                         <tr>
                             <td>${student.regdNo}</td>
                             <td>${student.name}</td>
-                            <td>${currentBranch === 'Technical' ? student.technicalAttendance : student.nonTechnicalAttendance}</td>
+                            <td>${currentAttendanceType === 'technical' ? student.technicalAttendance : student.nonTechnicalAttendance}</td>
                         </tr>
                     `).join('')}
                 </table>
             `;
         }
 
-        // Function to update the branch (Technical or Non-Technical)
-        function updateBranch(branch) {
-            currentBranch = branch;
-            document.getElementById("title").innerHTML = `CSD`;
-            if (branch === 'Technical' || branch === 'Non-Technical') {
-                showAttributes(); // Show data when either branch is clicked
-            } else {
-                document.getElementById('attributes').innerHTML = ''; // Clear attributes for other branches
+        function toggleDropdown() {
+            const dropdown = document.getElementById('branch-dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        window.onclick = function(event) {
+            const dropdown = document.getElementById('branch-dropdown');
+            if (!event.target.matches('#title')) {
+                if (dropdown.style.display === 'block') {
+                    dropdown.style.display = 'none';
+                }
             }
         }
     </script>

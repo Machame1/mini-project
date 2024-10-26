@@ -140,10 +140,8 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Redirect to the appropriate page if successful
                 window.location.href = data.redirectPage;
             } else {
-                // Show error message
                 errorMessage.innerHTML = data.message;
             }
         })

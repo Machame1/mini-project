@@ -95,7 +95,6 @@
     <div class="user-select">
         <label for="userRole">Select User:</label>
         <select id="userRole" onchange="toggleBranchInput()">
-            
             <option value="Admin">Admin</option>
             <option value="Deo">Deo</option>
             <option value="Placement">Placement</option>
@@ -132,7 +131,7 @@
             </select>
         </div>
 
-        <button type="button" onclick="validateSignup()">Sign Up</button>
+        <button type="button" id="signup" onclick="validateSignup()">Sign Up</button>
        
         <div id="errorMessage" class="error"></div>
         <a href="index.html">Already have an account? Login</a>
@@ -157,6 +156,12 @@
         const selectedRole = document.getElementById("userRole").value;
         const branch = document.getElementById("branch").value;
         const errorMessage = document.getElementById("errorMessage");
+
+        // Check if any fields are empty
+        if (!fullName || !email || !username || !password || !confirmPassword) {
+            alert("Please fill in all fields.");
+            return;
+        }
 
         if (password !== confirmPassword) {
             errorMessage.innerHTML = "Passwords do not match!";

@@ -140,42 +140,8 @@
         </div>
     </footer>
     
-    <script>
-    const studentDetails = {
-        username: "studentUsername", // Replace with actual username
-        fullName: "studentFullName", // Replace with actual full name
-        email: "studentEmail@example.com", // Replace with actual email
-        branch: "studentBranch" // Replace with actual branch
-    };
     
-    localStorage.setItem("studentDetails", JSON.stringify(studentDetails));
-    
-    function goToAttendance() {
-        location.href = 'attendance.html';
-    }
-    // Assuming the login API returns student details in JSON format
-fetch('/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: usernameInput, password: passwordInput })
-})
-.then(response => response.json())
-.then(data => {
-    if (data.success) {
-        // Store actual student details in local storage
-        localStorage.setItem("studentDetails", JSON.stringify(data.data));
-
-        // Redirect to attendance.html when login is successful
-        location.href = 'index2.html';
-    } else {
-        alert(data.message || "Login failed. Please try again.");
-    }
-})
-.catch(error => {
-    console.error('Error:', error);
-});
-
-    </script>
+  
        
 </body>
 </html>

@@ -172,7 +172,8 @@
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-    const username = "studentUsername"; 
+    const username =localStorage.getItem('username', username);
+    ; 
 
     // Fetch student details based on the username
     fetch(`/getStudentDetails?username=${username}`)

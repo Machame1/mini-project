@@ -17,8 +17,9 @@
             justify-content: center;
             align-items: center;
             position: relative;
+            overflow: hidden;
+            padding: 20px; /* Prevents the container from hitting screen edges */
         }
-
         body::before {
             content: '';
             position: absolute;
@@ -29,65 +30,61 @@
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1;
         }
-
         .signup-container {
             background-color: white;
-            padding: 40px;
+            padding: 20px; /* Adjusted padding for smaller screens */
             border-radius: 15px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            width: 90%; /* Makes it responsive */
+            max-width: 350px; /* Limits width on larger screens */
             z-index: 2;
             position: relative;
+            max-height: 90vh; /* Ensures container doesn’t exceed viewport */
+            overflow-y: auto; /* Adds scroll within container if content exceeds height */
         }
-
         h2 {
-            font-size: 40px;
+            font-size: 30px; /* Adjusted for smaller screens */
             text-align: center;
         }
-
         .signup-container input[type="text"],
         .signup-container input[type="password"],
-        .signup-container input[type="email"] {
-            font-size: 20px;
+        .signup-container input[type="email"],
+        .signup-container select {
+            font-size: 18px;
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
         }
-
         .signup-container button {
             width: 100%;
-            font-size: 20px;
+            font-size: 18px;
             padding: 10px;
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-           
         }
-
         .signup-container button:hover {
             background-color: #45a049;
         }
-
         .error {
             color: red;
             text-align: center;
             margin-top: 10px;
         }
-
         label {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
         }
-
         .user-select {
             margin-bottom: 15px;
         }
     </style>
+    
 </head>
 <body>
 
@@ -97,11 +94,12 @@
     <!-- Dropdown to select user -->
     <div class="user-select">
         <label for="userRole">Select User:</label>
-        <select id="userRole">
-            <option value="Student">Student</option>
+        <select id="userRole" onchange="toggleBranchInput()">
+            
             <option value="Admin">Admin</option>
             <option value="Deo">Deo</option>
             <option value="Placement">Placement</option>
+            <option value="Student">Student</option>
         </select>
     </div>
 
@@ -122,6 +120,18 @@
         <label>Confirm Password:</label><br><br>
         <input type="password" id="confirmPassword" placeholder="Confirm Password" required><br>
 
+        <div id="branchContainer" style="display: none;">
+            <label for="branch">Branch:</label><br><br>
+            <select id="branch">
+                <option value="">Select Branch</option>
+                <option value="CSE">CSE</option>
+                <option value="AIML">AIML</option>
+                <option value="CSM">CSM</option>
+                <option value="CSD">CSD</option>
+                <option value="CAI">CAI</option>
+            </select>
+        </div>
+
         <button type="button" onclick="validateSignup()">Sign Up</button>
        
         <div id="errorMessage" class="error"></div>
@@ -130,17 +140,32 @@
 </div>
 
 <script>
+    function toggleBranchInput() {
+        const userRole = document.getElementById("userRole").value;
+        const branchContainer = document.getElementById("branchContainer");
+        
+        // Show branch input only if the selected role is "Student"
+        branchContainer.style.display = userRole === "Student" ? "block" : "none";
+    }
+
     function validateSignup() {
-        var fullName = document.getElementById("fullName").value;
-        var email = document.getElementById("email").value;
-        var username = document.getElementById("username").value;
-        var password = document.getElementById("password").value;
-        var confirmPassword = document.getElementById("confirmPassword").value;
-        var selectedRole = document.getElementById("userRole").value;
-        var errorMessage = document.getElementById("errorMessage");
+        const fullName = document.getElementById("fullName").value;
+        const email = document.getElementById("email").value;
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const selectedRole = document.getElementById("userRole").value;
+        const branch = document.getElementById("branch").value;
+        const errorMessage = document.getElementById("errorMessage");
 
         if (password !== confirmPassword) {
             errorMessage.innerHTML = "Passwords do not match!";
+            return;
+        }
+
+        // Additional validation to ensure branch is selected if the role is Student
+        if (selectedRole === "Student" && !branch) {
+            errorMessage.innerHTML = "Please select a branch.";
             return;
         }
 
@@ -153,7 +178,8 @@
                 email: email,
                 username: username,
                 password: password,
-                role: selectedRole
+                role: selectedRole,
+                branch: selectedRole === "Student" ? branch : null
             })
         })
         .then(response => response.json())

@@ -84,7 +84,6 @@
             margin-bottom: 15px;
         }
     </style>
-    
 </head>
 <body>
 
@@ -104,23 +103,23 @@
 
     <!-- Sign-up Form -->
     <form id="signupForm">
-        <label>Full Name:</label><br><br>
-        <input type="text" id="fullName" placeholder="Enter Full Name" required><br>
-        
-        <label>Email:</label><br><br>
-        <input type="email" id="email" placeholder="Enter Email" required><br>
-        
-        <label>Username:</label><br><br>
-        <input type="text" id="username" placeholder="Enter Username" required><br>
-        
-        <label>Password:</label><br><br>
-        <input type="password" id="password" placeholder="Enter Password" required><br>
+        <label>Full Name:</label>
+        <input type="text" id="fullName" placeholder="Enter Full Name" required>
 
-        <label>Confirm Password:</label><br><br>
-        <input type="password" id="confirmPassword" placeholder="Confirm Password" required><br>
+        <label>Email:</label>
+        <input type="email" id="email" placeholder="Enter Email" required>
+
+        <label>Username:</label>
+        <input type="text" id="username" placeholder="Enter Username" required>
+
+        <label>Password:</label>
+        <input type="password" id="password" placeholder="Enter Password" required>
+
+        <label>Confirm Password:</label>
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
 
         <div id="branchContainer" style="display: none;">
-            <label for="branch">Branch:</label><br><br>
+            <label for="branch">Branch:</label>
             <select id="branch">
                 <option value="">Select Branch</option>
                 <option value="CSE">CSE</option>
@@ -132,7 +131,7 @@
         </div>
 
         <button type="button" id="signup" onclick="validateSignup()">Sign Up</button>
-       
+
         <div id="errorMessage" class="error"></div>
         <a href="index.html">Already have an account? Login</a>
     </form>
@@ -157,9 +156,12 @@
         const branch = document.getElementById("branch").value;
         const errorMessage = document.getElementById("errorMessage");
 
+        // Clear previous error messages
+        errorMessage.innerHTML = '';
+
         // Check if any fields are empty
         if (!fullName || !email || !username || !password || !confirmPassword) {
-            alert("Please fill in all fields.");
+            errorMessage.innerHTML = "Please fill in all fields.";
             return;
         }
 

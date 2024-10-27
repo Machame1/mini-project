@@ -141,6 +141,8 @@
         .then(data => {
             if (data.success) {
                 // Redirect to the appropriate page if successful
+                localStorage.setItem('username', username);
+
                 window.location.href = data.redirectPage;
             } else {
                 // Show error message

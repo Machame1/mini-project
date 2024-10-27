@@ -31,7 +31,7 @@ const saltRounds = 10;
 
 // Endpoint for handling signup
 app.post('/signup', (req, res) => {
-    const { fullName, email, username, password, role } = req.body;
+    const { fullName, email, username, password, role,branch } = req.body;
 
     console.log('New signup request:', req.body);
 
@@ -48,7 +48,9 @@ app.post('/signup', (req, res) => {
         }
 
         // SQL query to insert a new user with the hashed password
-        const query = 'INSERT INTO users (fullName, email, username, password, role) VALUES (?, ?, ?, ?, ?)';
+        const query = 'INSERT INTO users (fullName, email, username, password, role, branch) VALUES (?, ?, ?, ?, ?, ?)';
+        const values = role === 'Student' ? [fullName, email, username, password, role, branch] : [fullName, email, username, password, role, null];
+    
         db.query(query, [fullName, email, username, hashedPassword, role], (err, results) => {
             if (err) {
                 console.error('Error during user signup:', err);
@@ -215,6 +217,27 @@ app.get('/aiml_attendance', (req, res) => {
         return res.status(200).json(attendanceData); // Send the results as JSON
     });
 });
+app.get('/getStudentDetails', (req, res) => {
+    const username = req.query.username; // Assumes you send username as a query parameter
+
+    const sql = `
+        SELECT id, username, branch, role 
+        FROM users 
+        WHERE username = ? AND role = 'student'
+    `;
+
+    db.query(sql, [username], (err, results) => {
+        if (err) {
+            console.error("Error fetching student data:", err);
+            res.status(500).send("Database error");
+        } else if (results.length === 0) {
+            res.status(404).send("Student not found");
+        } else {
+            res.json(results[0]); // Return the student's details
+        }
+    });
+});
+
 // Server initialization
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

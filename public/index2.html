@@ -126,7 +126,7 @@
     <section>
         <nav>
             <ul>
-                <li><a href="#" id="crt-attendence">CRT (attendance)</a></li>
+                <li><a href="attendence.html" id="crt-attendence">CRT (attendance)</a></li>
                 <li><a href="#">MOCK TEST</a></li>
                 <li><a href="#">PLACEMENT STATUS</a></li>
                 <li><a href="#">FEE PAYMENT</a></li>
@@ -140,32 +140,7 @@
         </div>
     </footer>
     
-    <script>
-        // Helper function to extract cookies
-        function getCookie(name) {
-            let cookieArr = document.cookie.split(";");
-            for (let i = 0; i < cookieArr.length; i++) {
-                let cookiePair = cookieArr[i].split("=");
-                if (name === cookiePair[0].trim()) {
-                    return decodeURIComponent(cookiePair[1]);
-                }
-            }
-            return null;
-        }
-
-        // Event listener for clicking on the CRT (attendance) link
-        document.getElementById('crt-attendence').addEventListener('click', function (event) {
-            event.preventDefault(); // Prevent default link behavior
-            const branch = getCookie('branch'); // Retrieve the selected branch from cookie
-
-            if (!branch) {
-                alert("Branch not selected!"); // Alert if no branch is set
-                return;
-            }
-
-            // Redirect to a branch-specific attendance page
-            window.location.href = `${branch}.html`; // Adjust the URL based on your structure
-        });
-    </script>
+   
+       
 </body>
 </html>

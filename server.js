@@ -51,7 +51,7 @@ app.post('/signup', (req, res) => {
         const query = 'INSERT INTO users (fullName, email, username, password, role, branch) VALUES (?, ?, ?, ?, ?, ?)';
         const values = role === 'Student' ? [fullName, email, username, password, role, branch] : [fullName, email, username, password, role, null];
     
-        db.query(query, [fullName, email, username, hashedPassword, role], (err, results) => {
+        db.query(query, [fullName, email, username, hashedPassword, role, branch], (err, results) => {
             if (err) {
                 console.error('Error during user signup:', err);
 
@@ -218,10 +218,10 @@ app.get('/aiml_attendance', (req, res) => {
     });
 });
 app.get('/getStudentDetails', (req, res) => {
-    const username = req.query.username; // Assumes you send username as a query parameter
-
+    const username = req.query.username; 
+    console.log(`${username}`)
     const sql = `
-        SELECT id, username, branch, role 
+        SELECT id, username, branch, email, fullName
         FROM users 
         WHERE username = ? AND role = 'student'
     `;
@@ -233,7 +233,8 @@ app.get('/getStudentDetails', (req, res) => {
         } else if (results.length === 0) {
             res.status(404).send("Student not found");
         } else {
-            res.json(results[0]); // Return the student's details
+            console.log(results)
+            res.json(results[0]); 
         }
     });
 });

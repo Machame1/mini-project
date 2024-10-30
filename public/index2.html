@@ -140,8 +140,31 @@
         </div>
     </footer>
     
+    <script>
     
-  
+    
+fetch('/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: usernameInput, password: passwordInput })
+})
+.then(response => response.json())
+.then(data => {
+    if (data.success) {
+        // Store actual student details in local storage
+        localStorage.setItem("studentDetails", JSON.stringify(data.data));
+
+        // Redirect to attendance.html when login is successful
+        location.href = 'index2.html';
+    } else {
+        alert(data.message || "Login failed. Please try again.");
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+});
+
+    </script>
        
 </body>
 </html>

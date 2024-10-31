@@ -6,82 +6,145 @@
     <title>Attendance and Topics</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #d4edba; /* Set the background color of the webpage */
+            background: linear-gradient(135deg, #76b852, #8dc26f); /* Green gradient background */
+            transition: background 0.3s; /* Smooth transition for background color */
+            color: #fff; /* Set default text color to white for contrast */
         }
+
+        /* Keyframe Animation for Fade In */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Keyframe Animation for Slide In */
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
         .container {
             text-align: center;
-            padding: 20px;
+            padding: 30px;
+            animation: fadeIn 1s ease-in; /* Fade in animation */
+            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+            border-radius: 10px; /* Rounded corners for the container */
+            margin: 20px; /* Space around the container */
         }
+
         h1 {
             margin-bottom: 20px;
+            color: #ffec40; /* Bright yellow for the heading */
+            font-size: 24px; /* Increase heading size */
+            transition: color 0.3s; /* Smooth transition for text color */
         }
+
+        h1:hover {
+            color: #ffd700; /* Darker gold shade on hover */
+        }
+
         .buttons {
             margin-bottom: 30px;
         }
+
         button {
-            padding: 10px 20px;
+            padding: 12px 25px;
             font-size: 16px;
             margin: 10px;
             cursor: pointer;
-            background-color: #f6d5a8; /* Button background color */
+            background-color: #ff6f61; /* Vibrant coral button color */
             border: none; /* Remove default border */
             border-radius: 5px; /* Rounded corners */
-            transition: background-color 0.3s; /* Smooth transition for hover effect */
+            transition: background-color 0.3s, transform 0.2s; /* Smooth transition for hover effect */
+            animation: slideIn 0.5s ease-in-out; /* Slide in animation for buttons */
+            color: #fff; /* Button text color */
+            font-weight: bold; /* Bold text for buttons */
         }
+
         button:hover {
-            background-color: #e2b69f; /* Darker shade on hover */
+            background-color: #e65c50; /* Darker shade on hover */
+            transform: scale(1.05); /* Scale up button on hover */
         }
+
         .topics-section {
             display: flex;
             padding: 0 20px;
             height: calc(100vh - 160px); /* Full height minus the space for header and buttons */
+            transition: height 0.3s; /* Smooth transition for height */
         }
+
         .topics-list {
             list-style-type: none;
             padding: 0;
             width: 200px; /* Set a fixed width for the topics list */
             margin-right: 20px;
+            animation: slideIn 0.5s ease-in-out; /* Slide in animation for topics list */
         }
+
         .topics-list li {
             margin: 5px 0;
-            padding: 5px;
-            background-color: #f0f0f0;
-            border-radius: 5px;
+            padding: 15px; /* Increased padding for better touch targets */
+            background-color: rgba(125, 13, 13, 0.558); /* Light background with transparency */
+            border-radius: 10px; /* Rounded corners */
             cursor: pointer;
-            color: #4a4a4a; /* Set topic text color */
+            transition: background-color 0.3s, transform 0.2s; /* Smooth transition for hover effect */
+            color: #0a0a0a; /* White text for topics */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Subtle shadow for text */
         }
+
+        .topics-list li:hover {
+            background-color: rgba(255, 255, 255, 0.4); /* Change background on hover */
+            transform: scale(1.03); /* Slightly scale the list item on hover */
+        }
+
         .table-container {
             display: none;
             flex-grow: 1; /* This will make the table take up the remaining space */
             overflow: auto; /* To handle scrolling if the table gets too large */
+            transition: opacity 0.3s; /* Smooth transition for table visibility */
+            animation: fadeIn 1s ease-in; /* Fade in animation for the table */
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background for the table container */
+            border-radius: 10px; /* Rounded corners */
+            padding: 20px; /* Padding inside table container */
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
+            transition: transform 0.3s; /* Smooth transition for table appearance */
         }
+
         table, th, td {
-            border: 1px solid black;
+            border: 1px solid #fff; /* White border for table */
         }
+
         th {
             background-color: #4d604d; /* Set header color */
-            color: white; /* Set header text color to white for contrast */
+            color: #fff; /* Set header text color to white for contrast */
         }
+
         th, td {
-            padding: 10px;
+            padding: 12px;
             text-align: center;
         }
+
         td {
-            background-color: #f0f0f0; /* Light background for table data cells */
+            background-color: rgba(255, 255, 255, 0.1); /* Light background for table data cells */
+            transition: background-color 0.3s; /* Smooth transition for background color */
+        }
+
+        td:hover {
+            background-color: rgba(255, 255, 255, 0.708); /* Darker shade on hover */
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>Welcome to Attendance Page</h2>
+        <h2 id="welcomeMessage">Welcome</h2>
     <p><strong>Username:</strong> <span id="studentUsername"></span></p>
     <p><strong>Full Name:</strong> <span id="studentFullName"></span></p>
     <p><strong>Email:</strong> <span id="studentEmail"></span></p>
@@ -171,40 +234,27 @@
             document.getElementById('table-container').style.display = 'block';
         }
 
-        async function getuserdata() {
-            try {
-                const username = localStorage.getItem('username');
-                if (!username) {
-                    console.error("No username found in localStorage");
-                    return;
-                }
-                
-                // Log the URL to check if username is correctly passed
-                
-                const resp = await fetch(`/getStudentDetails?username=${username}`);
-                
-                // Check if the response is OK (status 200)
-                if (!resp.ok) {
-                    console.error(`Server error: ${resp.status}`);
-                    return;
-                }
-                
-                const data = await resp.json();
-                
-                // Log the data received from the server
+    async function getuserdata() {
+        try {
+            const username = localStorage.getItem('username')
+            const resp = await fetch(`/getStudentDetails?username=${username}`)
+            if (!resp.ok) throw new Error(`Error: ${resp.status}`);
+            const data = await resp.json();
+            console.log(data)
+            document.getElementById('welcomeMessage').innerText = `Welcome, ${data.fullName}❣️`;
+
+            document.getElementById("studentUsername").innerText = data.username;
+            document.getElementById("studentFullName").innerText = data.fullName;
+            document.getElementById("studentEmail").innerText = data.email;
+            document.getElementById("studentBranch").innerText = data.branch;
+        }catch(error) {
+            console.error("Error fetching data:", error);
+            // document.getElementById("data-output").textContent = "Failed to load data.";
+      }
         
-                // Check and display each field, handling undefined values
-                document.getElementById("studentUsername").innerText = data.username ;
-                document.getElementById("studentFullName").innerText = data.fullName ;
-                document.getElementById("studentEmail").innerText = data.email ;
-                document.getElementById("studentBranch").innerText = data.branch ;
-        
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        }
-        getuserdata();
-        
+    }
+getuserdata()
+
 
     </script>
 

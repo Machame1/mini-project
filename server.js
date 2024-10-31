@@ -11,6 +11,7 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Database configuration
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -27,14 +28,19 @@ db.connect(err => {
 });
 
 const saltRounds = 10;
+
+// Email transporter configuration
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587, // or 465
+    secure: false, // true for 465, false for other ports
     auth: {
-        user: 'saikumarnaik881@gmail.com',
-        pass: 'grpr gwaz ezrf text'
-    }
+        user: 'vignanaiml@gmail.com', // your Gmail address
+        pass: 'FRIENDS123DHONI' // your App Password or account password
+    },
 });
 
+// Signup endpoint with email verification
 app.post('/signup', (req, res) => {
     const { fullName, email, username, password, role, branch } = req.body;
 
@@ -62,15 +68,17 @@ app.post('/signup', (req, res) => {
                 return res.status(500).json({ success: false, message: 'Error signing up!' });
             }
 
+            // Send verification email
             const verificationLink = `http://192.168.9.13:3000/verify-email?token=${verificationToken}&email=${email}`;
             const mailOptions = {
-                from: 'saikumarnaik881@gmail.com',
+                from: 'vignanaiml@gmail.com',
+
                 to: email,
                 subject: 'Email Verification',
                 html: `<p>Thank you for signing up! Please <a href="${verificationLink}">click here</a> to verify your email.</p>`
             };
 
-            transporter.sendMail(mailOptions, (error, info) => {
+            transporter.sendMail(mailOptions, (error) => {
                 if (error) {
                     console.error('Error sending verification email:', error);
                     return res.status(500).json({ success: false, message: 'Error sending verification email!' });
@@ -81,6 +89,31 @@ app.post('/signup', (req, res) => {
     });
 });
 
+// Email verification endpoint
+app.get('/verify-email', (req, res) => {
+    const { token, email } = req.query;
+
+    if (!token || !email) {
+        return res.status(400).send('Invalid request.');
+    }
+
+    const query = `UPDATE users SET status = 'approved', verificationToken = NULL WHERE email = ? AND verificationToken = ?`;
+
+    db.query(query, [email, token], (err, results) => {
+        if (err) {
+            console.error('Error verifying email:', err);
+            return res.status(500).send('Database error.');
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(400).send('Invalid or expired token.');
+        }
+
+        res.send('Email verified successfully! You can now log in.');
+    });
+});
+
+// Login endpoint
 app.post('/login', (req, res) => {
     const { username, password, role } = req.body;
 
@@ -126,29 +159,7 @@ app.post('/login', (req, res) => {
     });
 });
 
-app.get('/verify-email', (req, res) => {
-    const { token, email } = req.query;
-
-    if (!token || !email) {
-        return res.status(400).send('Invalid request.');
-    }
-
-    const query = `UPDATE users SET status = 'approved', verificationToken = NULL WHERE email = ? AND verificationToken = ?`;
-
-    db.query(query, [email, token], (err, results) => {
-        if (err) {
-            console.error('Error verifying email:', err);
-            return res.status(500).send('Database error.');
-        }
-
-        if (results.affectedRows === 0) {
-            return res.status(400).send('Invalid or expired token.');
-        }
-
-        res.send('Email verified successfully! You can now log in.');
-    });
-});
-
+// Attendance routes for each branch
 const attendanceRoutes = ['cai_students', 'csm_attendance', 'csd_attendance', 'aiml_attendance'];
 
 attendanceRoutes.forEach(route => {
@@ -174,25 +185,23 @@ attendanceRoutes.forEach(route => {
     });
 });
 
+// Fetch student details
 app.get('/getStudentDetails', (req, res) => {
-    const username = req.query.username; 
-    console.log(`Received username: ${username}`);
-
+    const username = req.query.username;
     const sql = `
         SELECT id, username, branch, email, fullName
         FROM users 
-        WHERE username = ? AND role = 'student'
+        WHERE username = ? AND role = 'Student'
     `;
 
     db.query(sql, [username], (err, results) => {
         if (err) {
             console.error("Error fetching student data:", err);
-            res.status(500).json({ success: false, message: "Database error" });
+            return res.status(500).send("Database error");
         } else if (results.length === 0) {
-            res.status(404).json({ success: false, message: "Student not found" });
+            return res.status(404).send("Student not found");
         } else {
-            console.log("Student details:", results[0]);
-            res.json({ success: true, details: results[0] });
+            res.json(results[0]); 
         }
     });
 });

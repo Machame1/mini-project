@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Background image and opacity */
+        /* Background image and styling */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             background-image: url("project images/background image2.jpg"); /* Replace with your image URL */
             background-size: cover;
             background-position: center;
@@ -18,9 +19,10 @@
             justify-content: center;
             align-items: center;
             position: relative;
+            overflow: hidden;
         }
 
-        /* Adding a dark overlay with opacity on the background */
+        /* Dark overlay for background */
         body::before {
             content: '';
             position: absolute;
@@ -28,64 +30,111 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5); /* Adjust opacity (0.5 = 50% opacity) */
+            background-color: rgba(0, 0, 0, 0.7); /* Adjust opacity */
             z-index: 1;
         }
 
         .login-container {
-            background-color: white;
+            background-color: #ffffff;
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.3);
+            width: 350px;
             z-index: 2; /* Ensures login container is above the overlay */
             position: relative;
+            text-align: center; /* Center-align text */
+            animation: fadeIn 0.5s ease; /* Fade-in animation */
+        }
+
+        /* Keyframes for fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         h2 {
-            font-size: 40px;
-            text-align: center;
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #333;
+            text-shadow: 1px 1px 5px rgba(255, 255, 255, 0.5); /* Subtle shadow for text */
         }
 
         .login-container input[type="text"],
-        .login-container input[type="password"] {
-            font-size: 20px;
+        .login-container input[type="password"],
+        .login-container select {
+            font-size: 18px;
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s; /* Added box-shadow transition */
+        }
+
+        .login-container input[type="text"]:focus,
+        .login-container input[type="password"]:focus,
+        .login-container select:focus {
+            border-color: #4CAF50; /* Change border color on focus */
+            outline: none;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Box shadow on focus */
         }
 
         .login-container button {
             width: 100%;
             font-size: 20px;
-            padding: 10px;
+            padding: 12px;
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s; /* Added transform transition */
         }
 
         .login-container button:hover {
-            background-color: #45a049;
+            background-color: #45a049; /* Darker shade on hover */
+            transform: scale(1.05); /* Slightly enlarge on hover */
         }
 
         .error {
             color: red;
             text-align: center;
             margin-top: 10px;
+            font-weight: 500; /* Increased font weight for better visibility */
+            animation: fadeIn 0.5s ease; /* Fade-in animation for error message */
         }
 
         label {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
+            margin-bottom: 5px;
+            display: block; /* Ensure labels are block elements */
         }
 
         .user-select {
             margin-bottom: 15px; 
+        }
+
+        /* Responsive design */
+        @media (max-width: 400px) {
+            .login-container {
+                width: 90%; /* Adjust container width on smaller screens */
+            }
+        }
+
+        /* Additional styling for the link */
+        .login-container a {
+            display: inline-block;
+            margin-top: 15px;
+            color: #4CAF50;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .login-container a:hover {
+            color: #45a049; /* Change color on hover */
         }
     </style>
 </head>
@@ -107,7 +156,7 @@
 
     <!-- Login Form with dynamic user label -->
     <form id="loginForm">
-        <label id="userLabel">Login as: Student</label><br><br>
+        <label id="userLabel">Login as: Student</label><br>
         <input type="text" id="username" placeholder="Enter Username" required><br>
         <input type="password" id="password" placeholder="Enter Password" required><br>
         <button type="button" onclick="validateLogin()">Login</button>
@@ -141,7 +190,6 @@
         .then(data => {
             if (data.success) {
                 localStorage.setItem('username', username);
-
                 window.location.href = data.redirectPage;
             } else {
                 // Show error message
@@ -152,17 +200,6 @@
             console.error('Error:', error);
             errorMessage.innerHTML = "An error occurred while logging in.";
         });
-    }
-    function login() {
-        // Assume userRole is determined based on login
-        const userRole = "placement"; // Simulating "placement" role
- 
-        if (userRole === "placement") {
-            window.location.href = "index3.html"; // Redirect to branch selection
-        } else {
-            // Handle other roles
-            window.location.href = "index2.html";
-        }
     }
 </script>
 

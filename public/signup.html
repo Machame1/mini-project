@@ -5,104 +5,171 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up Page</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-image: url("project images/background image2.jpg");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-            padding: 20px; /* Prevents the container from hitting screen edges */
-        }
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1;
-        }
-        .signup-container {
-            background-color: white;
-            padding: 20px; /* Adjusted padding for smaller screens */
-            border-radius: 15px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            width: 90%; /* Makes it responsive */
-            max-width: 350px; /* Limits width on larger screens */
-            z-index: 2;
-            position: relative;
-            max-height: 90vh; /* Ensures container doesn’t exceed viewport */
-            overflow-y: auto; /* Adds scroll within container if content exceeds height */
-        }
-        h2 {
-            font-size: 30px; /* Adjusted for smaller screens */
-            text-align: center;
-        }
-        .signup-container input[type="text"],
-        .signup-container input[type="password"],
-        .signup-container input[type="email"],
-        .signup-container select {
-            font-size: 18px;
-            width: 100%;
-            padding: 8px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        .signup-container button {
-            width: 100%;
-            font-size: 18px;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .signup-container button:hover {
-            background-color: #45a049;
-        }
-        .error {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
-        }
-        label {
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .user-select {
-            margin-bottom: 15px;
-        }
-    </style>
+        /* (styling remains as provided, included here for context) */
+        /* Your existing CSS here */
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-image: url("project images/background image2.jpg");
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                height: 100vh;
+                margin: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+                overflow: hidden;
+                padding: 20px;
+            }
+            body::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.6);
+                z-index: 1;
+            }
+            .signup-container {
+                background-color: rgba(255, 255, 255, 0.95);
+                padding: 30px;
+                border-radius: 20px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+                width: 90%;
+                max-width: 400px;
+                z-index: 2;
+                position: relative;
+                max-height: 90vh;
+                overflow-y: auto;
+                backdrop-filter: blur(10px);
+            }
+            h2 {
+                font-size: 32px;
+                text-align: center;
+                color: #2c3e50;
+                margin-bottom: 30px;
+                font-weight: 600;
+            }
+            .signup-container input[type="text"],
+            .signup-container input[type="password"],
+            .signup-container input[type="email"],
+            .signup-container select {
+                font-size: 16px;
+                width: 100%;
+                padding: 12px;
+                margin: 8px 0 20px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                box-sizing: border-box;
+                transition: all 0.3s ease;
+            }
+            .signup-container input:focus,
+            .signup-container select:focus {
+                border-color: #3498db;
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            }
+            .signup-container button {
+                width: 100%;
+                font-size: 18px;
+                padding: 14px;
+                background-color: #3498db;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-weight: 600;
+                margin-top: 20px;
+            }
+            .signup-container button:hover {
+                background-color: #2980b9;
+                transform: translateY(-2px);
+            }
+            .signup-container button:active {
+                transform: translateY(0);
+            }
+            .error {
+                color: #e74c3c;
+                text-align: center;
+                margin-top: 15px;
+                font-size: 14px;
+                font-weight: 500;
+                padding: 10px;
+                background-color: rgba(231, 76, 60, 0.1);
+                border-radius: 6px;
+                display: none;
+            }
+            label {
+                font-size: 16px;
+                font-weight: 600;
+                color: #34495e;
+                display: block;
+                margin-bottom: 5px;
+            }
+            .user-select {
+                margin-bottom: 20px;
+            }
+            .success-alert {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 20px;
+                background-color: #2ecc71;
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+                display: none;
+                animation: slideIn 0.5s ease-out;
+            }
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            .login-link {
+                text-align: center;
+                margin-top: 20px;
+            }
+            .login-link a {
+                color: #3498db;
+                text-decoration: none;
+                font-weight: 500;
+                transition: color 0.3s ease;
+            }
+            .login-link a:hover {
+                color: #2980b9;
+                text-decoration: underline;
+            }
+        </style>
+  
 </head>
 <body>
 
 <div class="signup-container">
     <h2>Sign Up</h2>
 
-    <!-- Dropdown to select user -->
     <div class="user-select">
         <label for="userRole">Select User:</label>
         <select id="userRole" onchange="toggleBranchInput()">
+            <option value="">Select User</option>
             <option value="Admin">Admin</option>
             <option value="Deo">Deo</option>
             <option value="Placement">Placement</option>
             <option value="Student">Student</option>
         </select>
     </div>
-
-    <!-- Sign-up Form -->
-    <form id="signupForm">
+    
+    <form id="signupForm" onsubmit="event.preventDefault(); validateSignup();">
         <label>Full Name:</label>
         <input type="text" id="fullName" placeholder="Enter Full Name" required>
 
@@ -118,7 +185,7 @@
         <label>Confirm Password:</label>
         <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
 
-        <div id="branchContainer" >
+        <div id="branchContainer" style="display: none;">
             <label for="branch">Branch:</label>
             <select id="branch" name="branch">
                 <option value="">Select Branch</option>
@@ -130,22 +197,35 @@
             </select>
         </div>
 
-        <button type="button" id="signup" onclick="validateSignup()">Sign Up</button>
+        <button type="submit" id="signup">Create Account</button>
 
         <div id="errorMessage" class="error"></div>
-        <a href="index.html">Already have an account? Login</a>
+        <div class="login-link">
+            <a href="index.html">Already have an account? Login</a>
+        </div>
     </form>
+</div>
+
+<div id="successAlert" class="success-alert">
+    Verification email sent! Please check your inbox.
 </div>
 
 <script>
     function toggleBranchInput() {
         const userRole = document.getElementById("userRole").value;
         const branchContainer = document.getElementById("branchContainer");
-        
-        // Show branch input only if the selected role is "Student"
         branchContainer.style.display = userRole === "Student" ? "block" : "none";
     }
-
+    
+    function showSuccessAlert() {
+        const alert = document.getElementById("successAlert");
+        alert.style.display = "block";
+        setTimeout(() => {
+            alert.style.display = "none";
+            window.location.href = 'index.html'; // Redirect to login page after alert
+        }, 2000);
+    }
+    
     function validateSignup() {
         const fullName = document.getElementById("fullName").value;
         const email = document.getElementById("email").value;
@@ -155,28 +235,27 @@
         const selectedRole = document.getElementById("userRole").value;
         const branch = document.getElementById("branch").value;
         const errorMessage = document.getElementById("errorMessage");
-
-        // Clear previous error messages
-        errorMessage.innerHTML = '';
-
-        // Check if any fields are empty
-        if (!fullName || !email || !username || !password || !confirmPassword) {
+    
+        errorMessage.style.display = "none";
+    
+        // Validate inputs
+        if (!fullName || !email || !username || !password || !confirmPassword || !selectedRole) {
             errorMessage.innerHTML = "Please fill in all fields.";
+            errorMessage.style.display = "block";
             return;
         }
-
         if (password !== confirmPassword) {
-            errorMessage.innerHTML = "Passwords do not match!";
+            errorMessage.innerHTML = "Passwords do not match.";
+            errorMessage.style.display = "block";
+            return;
+        }
+        if (password.length < 8) {
+            errorMessage.innerHTML = "Password must be at least 8 characters long.";
+            errorMessage.style.display = "block";
             return;
         }
 
-        // Additional validation to ensure branch is selected if the role is Student
-        if (selectedRole === "Student" && !branch) {
-            errorMessage.innerHTML = "Please select a branch.";
-            return;
-        }
-
-        // Sending the signup data to the server using Fetch API
+        // If validation passes, send data to server
         fetch('/signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -192,14 +271,16 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                window.location.href = 'index.html';
+                showSuccessAlert(); // Show success alert if signup was successful
             } else {
-                errorMessage.innerHTML = data.message || "Error signing up!";
+                errorMessage.innerHTML = data.message || "An error occurred. Please try again.";
+                errorMessage.style.display = "block";
             }
         })
         .catch(error => {
             console.error('Error:', error);
             errorMessage.innerHTML = "An error occurred while signing up.";
+            errorMessage.style.display = "block";
         });
     }
 </script>

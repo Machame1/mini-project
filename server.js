@@ -2,21 +2,20 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
-// Initialize the Express application
 const app = express();
 
-// Middleware for serving static files and parsing request bodies
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Database connection
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'mavasari@1928',
-    database: 'user_accounts' 
+    database: 'user_accounts'
 });
 
 db.connect(err => {
@@ -28,58 +27,68 @@ db.connect(err => {
 });
 
 const saltRounds = 10;
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'saikumarnaik881@gmail.com',
+        pass: 'grpr gwaz ezrf text'
+    }
+});
 
-// Endpoint for handling signup
 app.post('/signup', (req, res) => {
-    const { fullName, email, username, password, role,branch } = req.body;
+    const { fullName, email, username, password, role, branch } = req.body;
 
-    console.log('New signup request:', req.body);
-
-    // Check for missing fields
     if (!fullName || !email || !username || !password || !role) {
         return res.status(400).json({ success: false, message: 'All fields are required.' });
     }
 
-    // Hash the password before storing it
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+
     bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
         if (err) {
             console.error('Error hashing password:', err);
             return res.status(500).json({ success: false, message: 'Error signing up!' });
         }
 
-        // SQL query to insert a new user with the hashed password
-        const query = 'INSERT INTO users (fullName, email, username, password, role, branch) VALUES (?, ?, ?, ?, ?, ?)';
-        const values = role === 'Student' ? [fullName, email, username, password, role, branch] : [fullName, email, username, password, role, null];
-    
-        db.query(query, [fullName, email, username, hashedPassword, role, branch], (err, results) => {
-            if (err) {
-                console.error('Error during user signup:', err);
+        const query = `INSERT INTO users (fullName, email, username, password, role, branch, status, verificationToken) 
+                       VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`;
+        const values = [fullName, email, username, hashedPassword, role, role === 'Student' ? branch : null, verificationToken];
 
-                // Error handling based on error type
+        db.query(query, values, (err, results) => {
+            if (err) {
                 if (err.code === 'ER_DUP_ENTRY') {
                     return res.status(400).json({ success: false, message: 'Username or email already exists!' });
-                } else {
-                    return res.status(500).json({ success: false, message: 'Error signing up!' });
                 }
-            } 
-            
-            return res.status(200).json({ success: true, message: 'User signed up successfully!' });
+                return res.status(500).json({ success: false, message: 'Error signing up!' });
+            }
+
+            const verificationLink = `http://192.168.9.13:3000/verify-email?token=${verificationToken}&email=${email}`;
+            const mailOptions = {
+                from: 'saikumarnaik881@gmail.com',
+                to: email,
+                subject: 'Email Verification',
+                html: `<p>Thank you for signing up! Please <a href="${verificationLink}">click here</a> to verify your email.</p>`
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error('Error sending verification email:', error);
+                    return res.status(500).json({ success: false, message: 'Error sending verification email!' });
+                }
+                res.status(200).json({ success: true, message: 'Verification email sent! Please check your inbox.' });
+            });
         });
     });
 });
 
-// Login route
 app.post('/login', (req, res) => {
-    const username = req.body.username ? req.body.username.trim() : '';
-    const password = req.body.password ? req.body.password.trim() : '';
-    const role = req.body.role ? req.body.role.trim() : '';
+    const { username, password, role } = req.body;
 
-    // Check for missing fields
     if (!username || !password || !role) {
-        return res.status(400).json({ error: 'Username, password, and role are required.' });
+        return res.status(400).json({ success: false, message: 'All fields are required.' });
     }
 
-    const query = 'SELECT * FROM users WHERE username = ? AND role = ?';
+    const query = `SELECT * FROM users WHERE username = ? AND role = ?`;
     db.query(query, [username, role], (err, results) => {
         if (err) {
             console.error('Error during login:', err);
@@ -87,12 +96,15 @@ app.post('/login', (req, res) => {
         }
 
         if (results.length === 0) {
-            return res.status(401).json({ error: 'Invalid username, password, or role.' });
+            return res.status(401).json({ error: 'Invalid username or password.' });
         }
 
         const user = results[0];
 
-        // Compare passwords
+        if (user.status !== 'approved') {
+            return res.status(403).json({ error: 'Please verify your email before logging in.' });
+        }
+
         bcrypt.compare(password, user.password, (err, match) => {
             if (err) {
                 console.error('Error comparing passwords:', err);
@@ -100,126 +112,72 @@ app.post('/login', (req, res) => {
             }
 
             if (match) {
-                // Determine redirect page based on user role
-                let redirectPage;
-                if (user.role === 'Student') {
-                    redirectPage = '/index2.html'; // Redirect to Student page
-                } else {
-                    redirectPage = '/index3.html'; // Redirect for other roles
-                }
-
+                const redirectPage = user.role === 'Student' ? '/index2.html' : '/index3.html';
+                
                 return res.status(200).json({
                     success: true,
                     message: 'Login successful',
                     redirectPage: redirectPage
                 });
             } else {
-                return res.status(401).json({ error: 'Invalid username, password, or role.' });
+                return res.status(401).json({ error: 'Invalid username or password.' });
             }
         });
     });
 });
 
-app.get('/attendance', (req, res) => {
-    const { branch, attendanceType } = req.query; 
-    const query = `SELECT * FROM attendance WHERE branch = ?`; 
+app.get('/verify-email', (req, res) => {
+    const { token, email } = req.query;
 
-    db.query(query, [branch], (err, results) => {
+    if (!token || !email) {
+        return res.status(400).send('Invalid request.');
+    }
+
+    const query = `UPDATE users SET status = 'approved', verificationToken = NULL WHERE email = ? AND verificationToken = ?`;
+
+    db.query(query, [email, token], (err, results) => {
         if (err) {
-            console.error('Error fetching attendance data:', err);
-            return res.status(500).json({ error: 'Error fetching data' });
+            console.error('Error verifying email:', err);
+            return res.status(500).send('Database error.');
         }
-        return res.status(200).json(results); 
+
+        if (results.affectedRows === 0) {
+            return res.status(400).send('Invalid or expired token.');
+        }
+
+        res.send('Email verified successfully! You can now log in.');
     });
 });
 
-app.get('/cai_students', (req, res) => {
-    const { branch, attendanceType } = req.query; // Get branch and attendance type from query
-    const query = `SELECT regdNo, name, technicalAttendance, nonTechnicalAttendance FROM cai_students WHERE branch = ?`;
+const attendanceRoutes = ['cai_students', 'csm_attendance', 'csd_attendance', 'aiml_attendance'];
 
-    db.query(query, [branch], (err, results) => {
-        if (err) {
-            console.error('Error fetching attendance data:', err);
-            return res.status(500).json({ error: 'Error fetching data' });
-        }
+attendanceRoutes.forEach(route => {
+    app.get(`/${route}`, (req, res) => {
+        const { branch } = req.query;
+        const query = `SELECT regdNo, name, technicalAttendance, nonTechnicalAttendance FROM ${route} WHERE branch = ?`;
 
-        // Map results to include only required fields
-        const attendanceData = results.map(student => ({
-            regdNo: student.regdNo,
-            name: student.name,
-            technicalAttendance: student.technicalAttendance,
-            nonTechnicalAttendance: student.nonTechnicalAttendance
-        }));
-        
+        db.query(query, [branch], (err, results) => {
+            if (err) {
+                console.error(`Error fetching data for ${route}:`, err);
+                return res.status(500).json({ error: 'Error fetching data' });
+            }
 
-        return res.status(200).json(attendanceData); // Send the results as JSON
+            const attendanceData = results.map(student => ({
+                regdNo: student.regdNo,
+                name: student.name,
+                technicalAttendance: student.technicalAttendance,
+                nonTechnicalAttendance: student.nonTechnicalAttendance
+            }));
+
+            return res.status(200).json(attendanceData);
+        });
     });
 });
-app.get('/csm_attendance', (req, res) => {
-    const { branch, attendanceType } = req.query; 
-    const query = `SELECT regdNo, name, technicalAttendance, nonTechnicalAttendance FROM csm_attendance WHERE branch = ?`;
 
-    db.query(query, [branch], (err, results) => {
-        if (err) {
-            console.error('Error fetching attendance data:', err);
-            return res.status(500).json({ error: 'Error fetching data' });
-        }
-
-        // Map results to include only required fields
-        const attendanceData = results.map(student => ({
-            regdNo: student.regdNo,
-            name: student.name,
-            technicalAttendance: student.technicalAttendance,
-            nonTechnicalAttendance: student.nonTechnicalAttendance
-        }));
-        
-
-        return res.status(200).json(attendanceData); // Send the results as JSON
-    });
-});
-app.get('/csd_attendance', (req, res) => {
-    const { branch, attendanceType } = req.query; // Get branch and attendance type from query
-    const query = `SELECT regdNo, name, technicalAttendance, nonTechnicalAttendance FROM csd_attendance WHERE branch = ?`;
-
-    db.query(query, [branch], (err, results) => {
-        if (err) {
-            console.error('Error fetching attendance data:', err);
-            return res.status(500).json({ error: 'Error fetching data' });
-        }
-        const attendanceData = results.map(student => ({
-            regdNo: student.regdNo,
-            name: student.name,
-            technicalAttendance: student.technicalAttendance,
-            nonTechnicalAttendance: student.nonTechnicalAttendance
-        }));
-        return res.status(200).json(attendanceData); // Send the results as JSON
-    });
-});
-app.get('/aiml_attendance', (req, res) => {
-    const { branch, attendanceType } = req.query; // Get branch and attendance type from query
-    const query = `SELECT regdNo, name, technicalAttendance, nonTechnicalAttendance FROM aiml_attendance WHERE branch = ?`;
-
-    db.query(query, [branch], (err, results) => {
-        if (err) {
-            console.error('Error fetching attendance data:', err);
-            return res.status(500).json({ error: 'Error fetching data' });
-        }
-
-        // Map results to include only required fields
-        const attendanceData = results.map(student => ({
-            regdNo: student.regdNo,
-            name: student.name,
-            technicalAttendance: student.technicalAttendance,
-            nonTechnicalAttendance: student.nonTechnicalAttendance
-        }));
-        
-
-        return res.status(200).json(attendanceData); // Send the results as JSON
-    });
-});
 app.get('/getStudentDetails', (req, res) => {
     const username = req.query.username; 
-    console.log(`${username}`)
+    console.log(`Received username: ${username}`);
+
     const sql = `
         SELECT id, username, branch, email, fullName
         FROM users 
@@ -229,18 +187,18 @@ app.get('/getStudentDetails', (req, res) => {
     db.query(sql, [username], (err, results) => {
         if (err) {
             console.error("Error fetching student data:", err);
-            res.status(500).send("Database error");
+            res.status(500).json({ success: false, message: "Database error" });
         } else if (results.length === 0) {
-            res.status(404).send("Student not found");
+            res.status(404).json({ success: false, message: "Student not found" });
         } else {
-            console.log(results)
-            res.json(results[0]); 
+            console.log("Student details:", results[0]);
+            res.json({ success: true, details: results[0] });
         }
     });
 });
 
 // Server initialization
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

@@ -171,26 +171,40 @@
             document.getElementById('table-container').style.display = 'block';
         }
 
-    async function getuserdata() {
-        try {
-            const username = localStorage.getItem('username')
-            const resp = await fetch(`/getStudentDetails?username=${username}`)
-            if (!resp.ok) throw new Error(`Error: ${resp.status}`);
-            const data = await resp.json();
-            console.log(data)
-            document.getElementById("studentUsername").innerText = data.username;
-            document.getElementById("studentFullName").innerText = data.fullName;
-            document.getElementById("studentEmail").innerText = data.email;
-            document.getElementById("studentBranch").innerText = data.branch;
-        }catch(error) {
-            console.error("Error fetching data:", error);
-            // document.getElementById("data-output").textContent = "Failed to load data.";
-      }
+        async function getuserdata() {
+            try {
+                const username = localStorage.getItem('username');
+                if (!username) {
+                    console.error("No username found in localStorage");
+                    return;
+                }
+                
+                // Log the URL to check if username is correctly passed
+                
+                const resp = await fetch(`/getStudentDetails?username=${username}`);
+                
+                // Check if the response is OK (status 200)
+                if (!resp.ok) {
+                    console.error(`Server error: ${resp.status}`);
+                    return;
+                }
+                
+                const data = await resp.json();
+                
+                // Log the data received from the server
         
-    }
-    
-    getuserdata()
-
+                // Check and display each field, handling undefined values
+                document.getElementById("studentUsername").innerText = data.username ;
+                document.getElementById("studentFullName").innerText = data.fullName ;
+                document.getElementById("studentEmail").innerText = data.email ;
+                document.getElementById("studentBranch").innerText = data.branch ;
+        
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+        getuserdata();
+        
 
     </script>
 

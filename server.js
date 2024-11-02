@@ -215,7 +215,6 @@ app.post('/updateProfile', (req, res) => {
         });
     }
 
-    // First, check if email already exists for another user
     const checkEmailQuery = 'SELECT id FROM users WHERE email = ? AND username != ?';
     db.query(checkEmailQuery, [email, username], (err, results) => {
         if (err) {
@@ -233,7 +232,6 @@ app.post('/updateProfile', (req, res) => {
             });
         }
 
-        // If email is not in use, proceed with update
         const updateQuery = `
             UPDATE users 
             SET fullName = ?, 
@@ -258,21 +256,10 @@ app.post('/updateProfile', (req, res) => {
                 });
             }
 
-            const branchTable = getBranchTable(branch);
-            if (branchTable) {
-                const updateAttendanceQuery = `
-                    UPDATE ${branchTable} 
-                    SET name = ? 
-                    WHERE regdNo = ?
-                `;
+           
                 
-                db.query(updateAttendanceQuery, [fullName, username], (err) => {
-                    if (err) {
-                        console.error('Error updating attendance table:', err);
-                        // Don't return error as main profile update was successful
-                    }
-                });
-            }
+
+            
 
             res.json({ 
                 success: true, 
@@ -283,15 +270,7 @@ app.post('/updateProfile', (req, res) => {
 });
 
 // Helper function to get the correct attendance table name based on branch
-function getBranchTable(branch) {
-    const branchMap = {
-        'CAI': 'cai_students',
-        'CSM': 'csm_attendance',
-        'CSD': 'csd_attendance',
-        'AIML': 'aiml_attendance'
-    };
-    return branchMap[branch.toUpperCase()];
-}
+
 // Server initialization
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

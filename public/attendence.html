@@ -47,7 +47,8 @@
             text-align: center;
             font-size: 2.5em;
             margin-bottom: 20px;
-            animation: fadeIn 1s; /* Fade-in effect */
+            animation: fadeIn 1s; 
+            color: #007bff;/* Fade-in effect */
         }
         
         #welcomeMessage {
@@ -62,7 +63,10 @@
             to { text-shadow: 0px 0px 20px rgb(93, 5, 99) }
         }
 
-
+h1{
+    color: cadetblue;
+    text-align: center;
+}
         h1:hover {
             color: #000000; /* Darker gold shade on hover */
         }
@@ -71,7 +75,21 @@
             margin-bottom: 30px;
         }
 
-        button {
+        .tech{
+            padding: 12px 25px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #57020a; /* Vibrant coral button color */
+            border: none; /* Remove default border */
+            border-radius: 5px; /* Rounded corners */
+            transition: background-color 0.3s, transform 0.2s; /* Smooth transition for hover effect */
+            animation: slideIn 0.5s ease-in-out; /* Slide in animation for buttons */
+            color: #fff; /* Button text color */
+            font-weight: bold; 
+            margin-left: 25px;/* Bold text for buttons */
+        }
+        .itech{
             padding: 12px 25px;
             font-size: 16px;
             margin: 10px;
@@ -83,8 +101,8 @@
             animation: slideIn 0.5s ease-in-out; /* Slide in animation for buttons */
             color: #fff; /* Button text color */
             font-weight: bold; /* Bold text for buttons */
+            margin-left: 250px;
         }
-
         button:hover {
             background-color: #03326c; /* Darker shade on hover */
             transform: scale(1.05); /* Scale up button on hover */
@@ -127,9 +145,10 @@
             overflow: auto; /* To handle scrolling if the table gets too large */
             transition: opacity 0.3s; /* Smooth transition for table visibility */
             animation: fadeIn 1s ease-in; /* Fade in animation for the table */
-            background-color: rgb(71, 4, 4); /* Semi-transparent background for the table container */
+            background-color: rgb(137, 131, 131); /* Semi-transparent background for the table container */
             border-radius: 10px; /* Rounded corners */
-            padding: 20px; /* Padding inside table container */
+            padding: 20px;
+            margin-top: 10px; /* Padding inside table container */
         }
 
         table {
@@ -153,7 +172,7 @@
         }
 
         td {
-            background-color: rgba(255, 255, 255, 0.1); /* Light background for table data cells */
+            background-color: rgba(32, 15, 143, 0.662); /* Light background for table data cells */
             transition: background-color 0.3s; /* Smooth transition for background color */
         }
 
@@ -334,10 +353,14 @@
                 <form id="editProfileForm">
                     <div class="form-group">
                         
+                        <label for="editFullName">Username:</label>
+                        <input type="text" id="editUserName" name="userName" required>
+                    </div>
+                    <div class="form-group">
+                        
                         <label for="editFullName">Full Name:</label>
                         <input type="text" id="editFullName" name="fullName" required>
                     </div>
-                    
                     <div class="form-group">
                         <label for="editEmail">Email:</label>
                         <input type="email" id="editEmail" name="email" required>
@@ -349,7 +372,7 @@
                     </div>
                     
                     <div class="button-group">
-                        <button type="submit">Save Changes</button>
+                        <button type="submit">Save </button>
                         <button type="button" id="cancelEdit">Cancel</button>
                     </div>
                 </form>
@@ -358,8 +381,8 @@
         <h1>Attendance Percentage: 85%</h1>
 
         <div class="buttons">
-            <button onclick="showTopics('technical')">Technical</button>
-            <button onclick="showTopics('non-technical')">Non-Technical</button>
+            <button class=" tech" onclick="showTopics('technical')">Technical</button>
+            <button class=" itech"onclick="showTopics('non-technical')">Non-Technical</button>
         </div>
     </div>
 
@@ -449,7 +472,6 @@
             document.getElementById("studentBranch").innerText = data.branch;
         }catch(error) {
             console.error("Error fetching data:", error);
-            // document.getElementById("data-output").textContent = "Failed to load data.";
       }
         
     }
@@ -467,7 +489,9 @@ document.addEventListener('DOMContentLoaded', function() {
     loadProfileData();
     
     editBtn.addEventListener('click', function() {
-        // Pre-fill the form with current values
+        document.getElementById('editUserName').value = document.getElementById("studentUsername").innerText;
+
+
         document.getElementById('editFullName').value = document.getElementById('studentFullName').textContent;
         document.getElementById('editEmail').value = document.getElementById('studentEmail').textContent;
         document.getElementById('editBranch').value = document.getElementById('studentBranch').textContent;
@@ -482,7 +506,8 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         const formData = {
-            username: username,
+            username:username,
+            username: document.getElementById('editUserName').value,
             fullName: document.getElementById('editFullName').value,
             email: document.getElementById('editEmail').value,
             branch: document.getElementById('editBranch').value

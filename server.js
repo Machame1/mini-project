@@ -205,7 +205,93 @@ app.get('/getStudentDetails', (req, res) => {
         }
     });
 });
+app.post('/updateProfile', (req, res) => {
+    const { username, fullName, email, branch } = req.body;
 
+    if (!username || !fullName || !email || !branch) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'All fields are required.' 
+        });
+    }
+
+    // First, check if email already exists for another user
+    const checkEmailQuery = 'SELECT id FROM users WHERE email = ? AND username != ?';
+    db.query(checkEmailQuery, [email, username], (err, results) => {
+        if (err) {
+            console.error('Error checking email:', err);
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Database error' 
+            });
+        }
+
+        if (results.length > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Email already in use by another account' 
+            });
+        }
+
+        // If email is not in use, proceed with update
+        const updateQuery = `
+            UPDATE users 
+            SET fullName = ?, 
+                email = ?, 
+                branch = ? 
+            WHERE username = ? AND role = 'Student'
+        `;
+
+        db.query(updateQuery, [fullName, email, branch, username], (err, results) => {
+            if (err) {
+                console.error('Error updating profile:', err);
+                return res.status(500).json({ 
+                    success: false, 
+                    message: 'Error updating profile' 
+                });
+            }
+
+            if (results.affectedRows === 0) {
+                return res.status(404).json({ 
+                    success: false, 
+                    message: 'User not found' 
+                });
+            }
+
+            const branchTable = getBranchTable(branch);
+            if (branchTable) {
+                const updateAttendanceQuery = `
+                    UPDATE ${branchTable} 
+                    SET name = ? 
+                    WHERE regdNo = ?
+                `;
+                
+                db.query(updateAttendanceQuery, [fullName, username], (err) => {
+                    if (err) {
+                        console.error('Error updating attendance table:', err);
+                        // Don't return error as main profile update was successful
+                    }
+                });
+            }
+
+            res.json({ 
+                success: true, 
+                message: 'Profile updated successfully' 
+            });
+        });
+    });
+});
+
+// Helper function to get the correct attendance table name based on branch
+function getBranchTable(branch) {
+    const branchMap = {
+        'CAI': 'cai_students',
+        'CSM': 'csm_attendance',
+        'CSD': 'csd_attendance',
+        'AIML': 'aiml_attendance'
+    };
+    return branchMap[branch.toUpperCase()];
+}
 // Server initialization
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

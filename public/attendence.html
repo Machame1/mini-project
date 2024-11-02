@@ -9,9 +9,12 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #76b852, #8dc26f); /* Green gradient background */
             transition: background 0.3s; /* Smooth transition for background color */
-            color: #fff; /* Set default text color to white for contrast */
+            color: #fff;
+            background-image: url("project images/back.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+
         }
 
         /* Keyframe Animation for Fade In */
@@ -27,23 +30,41 @@
         }
 
         .container {
+             max-width: 600px;
+    margin: 0 auto;
+    background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    border-radius: 15px; /* Rounded corners */
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Soft shadow */
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.container:hover {
+    transform: translateY(-5px); /* Slight lift effect on hover */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7); /* Deeper shadow */
+}
+       
+        h2 {
             text-align: center;
-            padding: 30px;
-            animation: fadeIn 1s ease-in; /* Fade in animation */
-            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
-            border-radius: 10px; /* Rounded corners for the container */
-            margin: 20px; /* Space around the container */
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            animation: fadeIn 1s; /* Fade-in effect */
+        }
+        
+        #welcomeMessage {
+            font-size: 32px;
+            color: #a90ca4;
+            animation: slideIn 1s ease-out, glow 1.5s ease-in-out infinite alternate;
+            text-shadow: 0px 0px 10px rgb(158, 6, 6);
         }
 
-        h1 {
-            margin-bottom: 20px;
-            color: #ffec40; /* Bright yellow for the heading */
-            font-size: 24px; /* Increase heading size */
-            transition: color 0.3s; /* Smooth transition for text color */
+        @keyframes glow {
+            from { text-shadow: 0px 0px 10px rgb(5, 101, 139); }
+            to { text-shadow: 0px 0px 20px rgb(93, 5, 99) }
         }
+
 
         h1:hover {
-            color: #ffd700; /* Darker gold shade on hover */
+            color: #000000; /* Darker gold shade on hover */
         }
 
         .buttons {
@@ -55,7 +76,7 @@
             font-size: 16px;
             margin: 10px;
             cursor: pointer;
-            background-color: #ff6f61; /* Vibrant coral button color */
+            background-color: #57020a; /* Vibrant coral button color */
             border: none; /* Remove default border */
             border-radius: 5px; /* Rounded corners */
             transition: background-color 0.3s, transform 0.2s; /* Smooth transition for hover effect */
@@ -65,7 +86,7 @@
         }
 
         button:hover {
-            background-color: #e65c50; /* Darker shade on hover */
+            background-color: #03326c; /* Darker shade on hover */
             transform: scale(1.05); /* Scale up button on hover */
         }
 
@@ -106,7 +127,7 @@
             overflow: auto; /* To handle scrolling if the table gets too large */
             transition: opacity 0.3s; /* Smooth transition for table visibility */
             animation: fadeIn 1s ease-in; /* Fade in animation for the table */
-            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background for the table container */
+            background-color: rgb(71, 4, 4); /* Semi-transparent background for the table container */
             border-radius: 10px; /* Rounded corners */
             padding: 20px; /* Padding inside table container */
         }
@@ -137,7 +158,146 @@
         }
 
         td:hover {
-            background-color: rgba(255, 255, 255, 0.708); /* Darker shade on hover */
+            background-color: rgba(255, 255, 255, 0.708); 
+            color: #0a0a0a;
+        }
+        .profile-section {
+            width: 50%;
+            margin: 20px auto;
+            padding: 20px;
+            background: #705b1b;
+            border-radius: 8px;
+            animation: slideIn 0.5s ease-out;
+            
+        }
+        
+        .profile-field {
+            margin: 10px 0;
+            font-size: 16px;
+            animation: slideIn 1s ease-in-out;
+            color: #06b45a;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #444; /* Bottom border for each field */
+            transition: background 0.3s;
+        }
+        .profile-field:hover {
+            background: rgba(255, 255, 255, 0.1); /* Light hover effect */
+            transform: scale(1.02); /* Slight scale effect on hover */
+        }
+        
+        .profile-field span {
+            font-size: 1.2em; /* Slightly larger text */
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        /* Slide in animation */
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .edit-btn {
+            margin-top: 15px;
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            align-self: center; /* Center the button */
+
+        }
+        .edit-btn:hover {
+            background: #e64a19; /* Darker orange on hover */
+            transform: translateY(-2px); /* Slight lift effect on hover */
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            animation: slideIn 0.5s;
+        }
+        
+        .form-group {
+            margin: 15px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .button-group button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .button-group button[type="submit"] {
+            background: #28a745;
+            color: white;
+        }
+        
+        .button-group button[type="button"] {
+            background: #dc3545;
+            color: white;
+        }
+        .buttons button {
+            margin-right: 10px;
+        }
+        .topics-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .topics-list li {
+            cursor: pointer;
+            margin: 5px 0;
         }
     </style>
 </head>
@@ -145,10 +305,56 @@
 
     <div class="container">
         <h2 id="welcomeMessage">Welcome</h2>
-    <p><strong>Username:</strong> <span id="studentUsername"></span></p>
-    <p><strong>Full Name:</strong> <span id="studentFullName"></span></p>
-    <p><strong>Email:</strong> <span id="studentEmail"></span></p>
-    <p><strong>Branch:</strong> <span id="studentBranch"></span></p>
+        <div class="profile-section">
+            <div class="profile-field">
+                <span>Username:</span> 
+                <span id="studentUsername"></span>
+            </div>
+            
+            <div class="profile-field">
+                <span>Full Name:</span>
+                <span id="studentFullName"></span>
+            </div>
+            
+            <div class="profile-field">
+                <span>Email:</span>
+                <span id="studentEmail"></span>
+            </div>
+            
+            <div class="profile-field">
+                <span>Branch:</span>
+                <span id="studentBranch"></span>
+            </div>
+        
+            <button id="editProfileBtn" class="edit-btn">Edit Profile</button>
+        </div>
+        <div id="editProfileModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>Edit Profile</h2>
+                <form id="editProfileForm">
+                    <div class="form-group">
+                        
+                        <label for="editFullName">Full Name:</label>
+                        <input type="text" id="editFullName" name="fullName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editEmail">Email:</label>
+                        <input type="email" id="editEmail" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editBranch">Branch:</label>
+                        <input type="text" id="editBranch" name="branch" required>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit">Save Changes</button>
+                        <button type="button" id="cancelEdit">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
         <h1>Attendance Percentage: 85%</h1>
 
         <div class="buttons">
@@ -160,7 +366,7 @@
     <div class="topics-section">
         <div>
             <h2 id="topics-heading" style="display:none;">Topics</h2>
-            <ul id="technical-topics" class="topics-list">
+            <ul id="technical-topics" class="topics-list" style="display: none;">
                 <li onclick="showTable('Python', '01-Oct-2024 to 10-Oct-2024')">Python</li>
                 <li onclick="showTable('C Language', '15-Oct-2024 to 25-Oct-2024')">C Language</li>
                 <li onclick="showTable('DSA', '01-Nov-2024 to 10-Nov-2024')">DSA</li>
@@ -170,7 +376,7 @@
                 <li onclick="showTable('DBMS', '17-Dec-2024 to 27-Dec-2024')">DBMS</li>
                 <li onclick="showTable('OS', '01-Jan-2025 to 10-Jan-2025')">OS</li>
             </ul>
-            <ul id="non-technical-topics" class="topics-list">
+            <ul id="non-technical-topics" class="topics-list" style="display: none;">
                 <li onclick="showTable('Ratio and Proportion', '01-Oct-2024 to 05-Oct-2024')">Ratio and Proportion</li>
                 <li onclick="showTable('Profit and Loss', '10-Oct-2024 to 15-Oct-2024')">Profit and Loss</li>
                 <li onclick="showTable('Coding and Decoding', '20-Oct-2024 to 25-Oct-2024')">Coding and Decoding</li>
@@ -182,7 +388,7 @@
             </ul>
         </div>
 
-        <div class="table-container" id="table-container">
+        <div class="table-container" id="table-container" style="display:none;">
             <h2 id="topic-name"></h2>
             <table>
                 <thead>
@@ -205,34 +411,28 @@
 
     <script>
         function showTopics(type) {
-            // Hide both topic lists initially
             document.getElementById('technical-topics').style.display = 'none';
             document.getElementById('non-technical-topics').style.display = 'none';
-
-            // Show the appropriate topics based on the clicked button
+        
+            const topicsHeading = document.getElementById('topics-heading');
+            topicsHeading.style.display = 'none';
+        
             if (type === 'technical') {
                 document.getElementById('technical-topics').style.display = 'block';
+                topicsHeading.style.display = 'block';  
             } else if (type === 'non-technical') {
                 document.getElementById('non-technical-topics').style.display = 'block';
+                topicsHeading.style.display = 'block';  // Show heading if non-technical topics are displayed
             }
-
-            // Show the "Topics" heading when either button is clicked
-            document.getElementById('topics-heading').style.display = 'block';
-
-            // Hide the table if it was previously displayed
+        
             document.getElementById('table-container').style.display = 'none';
         }
-
+        
         function showTable(topic, dates) {
-            // Set the table heading to the topic name
             document.getElementById('topic-name').innerText = topic;
-
-            // Set the dates in the table's "Dates" column
             document.getElementById('topic-dates').innerText = dates;
-
-            // Show the table container
             document.getElementById('table-container').style.display = 'block';
-        }
+        } 
 
     async function getuserdata() {
         try {
@@ -254,7 +454,79 @@
         
     }
 getuserdata()
-
+document.addEventListener('DOMContentLoaded', function() {
+    const editBtn = document.getElementById('editProfileBtn');
+    const modal = document.getElementById('editProfileModal');
+    const cancelBtn = document.getElementById('cancelEdit');
+    const editForm = document.getElementById('editProfileForm');
+    
+    // Get the username from localStorage or wherever you store it
+    const username = localStorage.getItem('username');
+    
+    // Load initial profile data
+    loadProfileData();
+    
+    editBtn.addEventListener('click', function() {
+        // Pre-fill the form with current values
+        document.getElementById('editFullName').value = document.getElementById('studentFullName').textContent;
+        document.getElementById('editEmail').value = document.getElementById('studentEmail').textContent;
+        document.getElementById('editBranch').value = document.getElementById('studentBranch').textContent;
+        modal.style.display = 'flex';
+    });
+    
+    cancelBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+    
+    editForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            username: username,
+            fullName: document.getElementById('editFullName').value,
+            email: document.getElementById('editEmail').value,
+            branch: document.getElementById('editBranch').value
+        };
+        
+        updateProfile(formData);
+    });
+    
+    function loadProfileData() {
+        fetch(`/getStudentDetails?username=${username}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('studentUsername').textContent = data.username;
+                document.getElementById('studentFullName').textContent = data.fullName;
+                document.getElementById('studentEmail').textContent = data.email;
+                document.getElementById('studentBranch').textContent = data.branch;
+            })
+            .catch(error => console.error('Error loading profile:', error));
+    }
+    
+    function updateProfile(formData) {
+        fetch('/updateProfile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Profile updated successfully!');
+                modal.style.display = 'none';
+                loadProfileData(); // Reload the profile data
+            } else {
+                alert(data.message || 'Error updating profile');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating profile:', error);
+            alert('Error updating profile');
+        });
+    }
+});
 
     </script>
 

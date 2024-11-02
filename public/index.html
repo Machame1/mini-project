@@ -6,13 +6,12 @@
     <title>Login Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Background image and styling */
         body {
             font-family: 'Roboto', sans-serif;
-            background-image: url("project images/background image2.jpg"); /* Replace with your image URL */
+            background-image: url('project images/background image2.jpg'); /* Add your background image here */
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
+            background-attachment: fixed; /* Keeps the background image constant */
             height: 100vh;
             margin: 0;
             display: flex;
@@ -30,33 +29,31 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7); /* Adjust opacity */
+            background-color: rgba(0, 0, 0, 0.75);
             z-index: 1;
         }
 
         .login-container {
-            background-color: #ffffff;
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.5);
             width: 350px;
-            z-index: 2; /* Ensures login container is above the overlay */
+            z-index: 2;
             position: relative;
-            text-align: center; /* Center-align text */
-            animation: fadeIn 0.5s ease; /* Fade-in animation */
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent background for the container */
+            animation: slideIn 0.6s ease-out;
         }
 
-        /* Keyframes for fade-in animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         h2 {
             font-size: 36px;
             margin-bottom: 20px;
-            color: #333;
-            text-shadow: 1px 1px 5px rgba(255, 255, 255, 0.5); /* Subtle shadow for text */
+            text-shadow: 0 0 10px #4CAF50, 0 0 20px #4CAF50;
         }
 
         .login-container input[type="text"],
@@ -69,61 +66,45 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
-            transition: border-color 0.3s, box-shadow 0.3s; /* Added box-shadow transition */
-        }
-
-        .login-container input[type="text"]:focus,
-        .login-container input[type="password"]:focus,
-        .login-container select:focus {
-            border-color: #4CAF50; /* Change border color on focus */
-            outline: none;
-            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Box shadow on focus */
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         .login-container button {
             width: 100%;
             font-size: 20px;
             padding: 12px;
-            background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s; /* Added transform transition */
-        }
-
-        .login-container button:hover {
-            background-color: #45a049; /* Darker shade on hover */
-            transform: scale(1.05); /* Slightly enlarge on hover */
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .error {
             color: red;
             text-align: center;
             margin-top: 10px;
-            font-weight: 500; /* Increased font weight for better visibility */
-            animation: fadeIn 0.5s ease; /* Fade-in animation for error message */
+            font-weight: 500;
+            animation: fadeIn 0.5s ease;
         }
 
         label {
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 5px;
-            display: block; /* Ensure labels are block elements */
         }
 
         .user-select {
-            margin-bottom: 15px; 
+            margin-bottom: 15px;
         }
 
-        /* Responsive design */
         @media (max-width: 400px) {
             .login-container {
-                width: 90%; /* Adjust container width on smaller screens */
+                width: 90%;
             }
         }
 
-        /* Additional styling for the link */
         .login-container a {
             display: inline-block;
             margin-top: 15px;
@@ -134,7 +115,8 @@
         }
 
         .login-container a:hover {
-            color: #45a049; /* Change color on hover */
+            color: #45a049;
+            text-shadow: 0 0 5px #4CAF50;
         }
     </style>
 </head>
@@ -143,10 +125,10 @@
 <div class="login-container">
     <h2>Login</h2>
 
-    <!-- Dropdown to select user -->
     <div class="user-select">
         <label for="userRole">Select User:</label>
         <select id="userRole" onchange="updateUserLabel()">
+            <option value="select">Select</option>
             <option value="Student">Student</option>
             <option value="Admin">Admin</option>
             <option value="Deo">Deo</option>
@@ -154,21 +136,20 @@
         </select>
     </div>
 
-    <!-- Login Form with dynamic user label -->
     <form id="loginForm">
-        <label id="userLabel">Login as: Student</label><br>
+        <label id="userLabel">Login as: </label><br>
         <input type="text" id="username" placeholder="Enter Username" required><br>
         <input type="password" id="password" placeholder="Enter Password" required><br>
         <button type="button" onclick="validateLogin()">Login</button>
         <div id="errorMessage" class="error"></div>
-        <a href="signup.html">Don't have an account? Sign up</a>
+        <a href="signup.html"><u>Don't have an account? Sign up</u></a>
     </form>
 </div>
 
 <script>
     function updateUserLabel() {
-        var selectedRole = document.getElementById("userRole").value; 
-        document.getElementById("userLabel").innerText = "Login as: " + selectedRole; 
+        var selectedRole = document.getElementById("userRole").value;
+        document.getElementById("userLabel").innerText = "Login as: " + selectedRole;
     }
 
     function validateLogin() {
@@ -192,7 +173,6 @@
                 localStorage.setItem('username', username);
                 window.location.href = data.redirectPage;
             } else {
-                // Show error message
                 errorMessage.innerHTML = data.message;
             }
         })
@@ -201,6 +181,26 @@
             errorMessage.innerHTML = "An error occurred while logging in.";
         });
     }
+
+    function getRandomColor() {
+        let letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    function applyRandomStyles() {
+        const buttonColor = getRandomColor();
+        const shadowColor = getRandomColor();
+
+        document.querySelector('.login-container').style.backgroundColor = getRandomColor();
+        document.querySelector('button').style.backgroundColor = buttonColor;
+        document.querySelector('h2').style.textShadow = `0 0 10px ${shadowColor}, 0 0 20px ${shadowColor}`;
+    }
+
+    window.onload = applyRandomStyles;
 </script>
 
 </body>

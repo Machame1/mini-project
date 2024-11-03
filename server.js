@@ -32,11 +32,11 @@ const saltRounds = 10;
 // Email transporter configuration
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587, // or 465
-    secure: false, // true for 465, false for other ports
+    port: 465, // or 465
+    secure: true, // true for 465, false for other ports
     auth: {
-        user: 'vignanaiml@gmail.com', // your Gmail address
-        pass: 'FRIENDS123DHONI' // your App Password or account password
+        user: 'vignanaiml@gmail.com', 
+        pass: 'grnh vrcp hffd efyj' 
     },
 });
 
@@ -69,7 +69,7 @@ app.post('/signup', (req, res) => {
             }
 
             // Send verification email
-            const verificationLink = `http://192.168.9.13:3000/verify-email?token=${verificationToken}&email=${email}`;
+            const verificationLink = `http://localhost:3000/verify-email?token=${verificationToken}&email=${email}`;
             const mailOptions = {
                 from: 'vignanaiml@gmail.com',
 

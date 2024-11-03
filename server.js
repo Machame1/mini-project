@@ -69,7 +69,7 @@ app.post('/signup', (req, res) => {
             }
 
             // Send verification email
-            const verificationLink = `http://localhost:3000/verify-email?token=${verificationToken}&email=${email}`;
+const verificationLink = `http://localhost:3000/verify-email?token=${verificationToken}&email=${email}`;
             const mailOptions = {
                 from: 'vignanaiml@gmail.com',
 
@@ -160,7 +160,7 @@ app.post('/login', (req, res) => {
 });
 
 // Attendance routes for each branch
-const attendanceRoutes = ['cai_students', 'csm_attendance', 'csd_attendance', 'aiml_attendance'];
+const attendanceRoutes = ['attendance','cai_students', 'csm_attendance', 'csd_attendance', 'aiml_attendance'];
 
 attendanceRoutes.forEach(route => {
     app.get(`/${route}`, (req, res) => {

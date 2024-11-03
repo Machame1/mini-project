@@ -126,7 +126,7 @@
     <section>
         <nav>
             <ul>
-                <li><a href="attendence.html" id="crt-attendence">CRT (attendance)</a></li>
+                <li><a href="#" id="crt-attendence" onclick="goToAttendance()">CRT (attendance)</a></li>
                 <li><a href="#">MOCK TEST</a></li>
                 <li><a href="#">PLACEMENT STATUS</a></li>
                 <li><a href="#">FEE PAYMENT</a></li>
@@ -141,30 +141,46 @@
     </footer>
     
     <script>
-    
-    
-fetch('/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: usernameInput, password: passwordInput })
-})
-.then(response => response.json())
-.then(data => {
-    if (data.success) {
-        // Store actual student details in local storage
-        localStorage.setItem("studentDetails", JSON.stringify(data.data));
+        // Function to get cookie by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
 
-        // Redirect to attendance.html when login is successful
-        location.href = 'index2.html';
-    } else {
-        alert(data.message || "Login failed. Please try again.");
-    }
-})
-.catch(error => {
-    console.error('Error:', error);
-});
+        // Login function with username and password inputs
+        function login() {
+            const usernameInput = document.getElementById("username").value; // Assuming username input field
+            const passwordInput = document.getElementById("password").value; // Assuming password input field
 
+            fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: usernameInput, password: passwordInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    localStorage.setItem("studentDetails", JSON.stringify(data.data));
+                    location.href = 'index2.html';
+                } else {
+                    alert(data.message || "Login failed. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function goToAttendance() {
+            const branch = getCookie('branch');
+            if (branch) {
+                const page = branch.toLowerCase() + ".html";
+                window.location.href = page;
+            } else {
+                window.location.href = 'attendence.html';
+            }
+        }
     </script>
-       
 </body>
 </html>

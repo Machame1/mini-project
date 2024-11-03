@@ -148,15 +148,20 @@
 
 <script>
     function updateUserLabel() {
-        var selectedRole = document.getElementById("userRole").value;
+        const selectedRole = document.getElementById("userRole").value;
         document.getElementById("userLabel").innerText = "Login as: " + selectedRole;
     }
 
     function validateLogin() {
-        var username = document.getElementById("username").value.trim();
-        var password = document.getElementById("password").value.trim();
-        var selectedRole = document.getElementById("userRole").value.trim();
-        var errorMessage = document.getElementById("errorMessage");
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const selectedRole = document.getElementById("userRole").value;
+        const errorMessage = document.getElementById("errorMessage");
+
+        if (selectedRole === 'select') {
+            errorMessage.innerHTML = "Please select a user role.";
+            return;
+        }
 
         fetch('/login', {
             method: 'POST',
@@ -171,7 +176,22 @@
         .then(data => {
             if (data.success) {
                 localStorage.setItem('username', username);
-                window.location.href = data.redirectPage;
+
+                // Handle redirection based on role
+                switch (selectedRole) {
+                    case 'Student':
+                        window.location.href = 'index2.html';
+                        break;
+                    case 'Admin':
+                    case 'Deo':
+                        window.location.href = 'admin.html'; // Replace with the correct admin page URL
+                        break;
+                    case 'Placement':
+                        window.location.href = 'index3.html';
+                        break;
+                    default:
+                        errorMessage.innerHTML = "Unknown role selected.";
+                }
             } else {
                 errorMessage.innerHTML = data.message;
             }

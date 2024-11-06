@@ -30,88 +30,106 @@ db.connect(err => {
 const saltRounds = 10;
 
 // Email transporter configuration
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465, // or 465
-    secure: true, // true for 465, false for other ports
-    auth: {
-        user: 'vignanaiml@gmail.com', 
-        pass: 'grnh vrcp hffd efyj' 
-    },
-});
+// const transporter = nodemailer.createTransport({
+//     host: 'smtp.gmail.com',
+//     port: 465, // or 465
+//     secure: true, // true for 465, false for other ports
+//     auth: {
+//         user: 'vignanaiml@gmail.com', 
+//         pass: 'grnh vrcp hffd efyj' 
+//     },
+// });
+function generateOtp() {
+    return crypto.randomInt(100000, 999999).toString(); // Generate a 6-digit OTP
+}
 
-// Signup endpoint with email verification
+// Send OTP email
+function sendOtpEmail(email, otp) {
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'vignanaiml@gmail.com', // Replace with your email
+            pass: 'grnh vrcp hffd efyj' // Use an environment variable for the password
+        }
+    });
+
+    let mailOptions = {
+        from: 'vignanaiml@gmail.com',
+        to: email,
+        subject: 'OTP for Email Verification',
+        text: `Your OTP for verification is: ${otp}`
+    };
+
+    transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+            console.log('Error sending OTP:', err);
+        } else {
+            console.log('OTP sent:', info.response);
+        }
+    });
+}
+
+// Sign-Up Route
 app.post('/signup', (req, res) => {
     const { fullName, email, username, password, role, branch } = req.body;
 
-    if (!fullName || !email || !username || !password || !role) {
-        return res.status(400).json({ success: false, message: 'All fields are required.' });
-    }
+    // Check if the email already exists
+    const checkEmailQuery = 'SELECT * FROM users WHERE email = ?';
+    db.execute(checkEmailQuery, [email], (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: 'Error checking email.' });
+        if (results.length > 0) return res.status(400).json({ success: false, message: 'Email already exists.' });
 
-    const verificationToken = crypto.randomBytes(32).toString('hex');
+        // Generate OTP
+        const otp = generateOtp();
 
-    bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
-        if (err) {
-            console.error('Error hashing password:', err);
-            return res.status(500).json({ success: false, message: 'Error signing up!' });
-        }
+        // Store user data with "pending" status and OTP in the database
+        const insertQuery = 'INSERT INTO users (fullName, email, username, password, role, branch, otp, status) VALUES (?, ?, ?, ?, ?, ?, ?, "pending")';
+        db.execute(insertQuery, [fullName, email, username, bcrypt.hashSync(password, 10), role, branch, otp], (err, result) => {
+            if (err) return res.status(500).json({ success: false, message: 'Error storing user data.' });
 
-        const query = `INSERT INTO users (fullName, email, username, password, role, branch, status, verificationToken) 
-                       VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`;
-        const values = [fullName, email, username, hashedPassword, role, role === 'Student' ? branch : null, verificationToken];
+            // Send OTP email
+            sendOtpEmail(email, otp);
 
-        db.query(query, values, (err, results) => {
-            if (err) {
-                if (err.code === 'ER_DUP_ENTRY') {
-                    return res.status(400).json({ success: false, message: 'Username or email already exists!' });
-                }
-                return res.status(500).json({ success: false, message: 'Error signing up!' });
-            }
-
-            // Send verification email
-const verificationLink = `http://localhost:3000/verify-email?token=${verificationToken}&email=${email}`;
-            const mailOptions = {
-                from: 'vignanaiml@gmail.com',
-
-                to: email,
-                subject: 'Email Verification',
-                html: `<p>Thank you for signing up! Please <a href="${verificationLink}">click here</a> to verify your email.</p>`
-            };
-
-            transporter.sendMail(mailOptions, (error) => {
-                if (error) {
-                    console.error('Error sending verification email:', error);
-                    return res.status(500).json({ success: false, message: 'Error sending verification email!' });
-                }
-                res.status(200).json({ success: true, message: 'Verification email sent! Please check your inbox.' });
-            });
+            res.status(200).json({ success: true, message: 'Signup successful. OTP sent to your email for verification.' });
         });
     });
 });
 
-// Email verification endpoint
-app.get('/verify-email', (req, res) => {
-    const { token, email } = req.query;
+// OTP Verification Route
+app.post('/verify-otp', (req, res) => {
+    const { email, otp } = req.body;
 
-    if (!token || !email) {
-        return res.status(400).send('Invalid request.');
-    }
-
-    const query = `UPDATE users SET status = 'approved', verificationToken = NULL WHERE email = ? AND verificationToken = ?`;
-
-    db.query(query, [email, token], (err, results) => {
-        if (err) {
-            console.error('Error verifying email:', err);
-            return res.status(500).send('Database error.');
+    // Fetch the OTP stored in the database for this email
+    const query = 'SELECT otp, status FROM users WHERE email = ?';
+    db.execute(query, [email], (err, result) => {
+        if (err || result.length === 0) {
+            return res.status(500).json({ success: false, message: 'User not found or error in retrieving OTP.' });
         }
 
-        if (results.affectedRows === 0) {
-            return res.status(400).send('Invalid or expired token.');
+        const storedOtp = result[0].otp;
+        const status = result[0].status;
+
+        if (status === 'approved') {
+            return res.status(400).json({ success: false, message: 'This email is already verified.' });
         }
 
-        res.send('Email verified successfully! You can now log in.');
+        // Verify the OTP
+        if (storedOtp !== otp) {
+            return res.status(400).json({ success: false, message: 'Invalid OTP. Please try again.' });
+        }
+
+        // Update the user status to 'approved' and save the user details
+        const updateQuery = 'UPDATE users SET status = "approved" WHERE email = ?';
+        db.execute(updateQuery, [email], (err) => {
+            if (err) {
+                return res.status(500).json({ success: false, message: 'Error updating user status.' });
+            }
+
+            res.status(200).json({ success: true, message: 'Account verified and successfully created.' });
+        });
     });
 });
+
 
 // Login endpoint
 app.post('/login', (req, res) => {
@@ -134,8 +152,9 @@ app.post('/login', (req, res) => {
 
         const user = results[0];
 
+        // Check if the user's account is approved
         if (user.status !== 'approved') {
-            return res.status(403).json({ error: 'Please verify your email before logging in.' });
+            return res.status(403).json({ error: 'Account not verified. Please complete OTP verification.' });
         }
 
         bcrypt.compare(password, user.password, (err, match) => {
@@ -158,7 +177,6 @@ app.post('/login', (req, res) => {
         });
     });
 });
-
 // Attendance routes for each branch
 const attendanceRoutes = ['attendance','cai_students', 'csm_attendance', 'csd_attendance', 'aiml_attendance'];
 
@@ -255,11 +273,6 @@ app.post('/updateProfile', (req, res) => {
                     message: 'User not found' 
                 });
             }
-
-           
-                
-
-            
 
             res.json({ 
                 success: true, 

@@ -11,7 +11,7 @@
             padding: 0;
             transition: background 0.3s; /* Smooth transition for background color */
             color: #fff;
-            background-image: url("project images/back.jpg");
+            background: linear-gradient(to right, #691a06, #043570);
             background-repeat: no-repeat;
             background-size: cover;
 
@@ -182,7 +182,7 @@ h1{
             color: #0a0a0a;
         }
         .profile-section {
-            width: 50%;
+            width: 60%;
             margin: 20px auto;
             padding: 20px;
             background: #705b1b;
@@ -465,7 +465,7 @@ h1{
             if (!resp.ok) throw new Error(`Error: ${resp.status}`);
             const data = await resp.json();
             console.log(data)
-            document.getElementById('welcomeMessage').innerText = `Welcome, ${data.fullName}❣️`;
+            document.getElementById('welcomeMessage').innerText = `Welcome, ${data.fullName}`;
 
             document.getElementById("studentUsername").innerText = data.username;
             document.getElementById("studentFullName").innerText = data.fullName;
@@ -483,7 +483,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelBtn = document.getElementById('cancelEdit');
     const editForm = document.getElementById('editProfileForm');
     
-    // Get the username from localStorage or wherever you store it
     const username = localStorage.getItem('username');
     
     // Load initial profile data

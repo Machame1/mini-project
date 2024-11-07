@@ -256,7 +256,6 @@
         </div>
     </footer>
    
-    
     <script>
         function checkUserRole() {
             const role = getCookie('userRole');
@@ -264,7 +263,8 @@
                 document.getElementById("add-student-link").style.display = 'block';
             }
         }       
-         function getCookie(name) {
+
+        function getCookie(name) {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) return parts.pop().split(';').shift();
@@ -277,34 +277,40 @@
 
             fetch('/login', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: usernameInput, password: passwordInput })
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username: usernameInput, password: passwordInput }),
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    localStorage.setItem("studentDetails", JSON.stringify(data.data));
-                    location.href = 'index2.html';
+                    document.cookie = `userRole=${data.role}`;
+                    document.cookie = `branch=${data.branch}`;
+                    window.location.href = data.redirectUrl; // Redirect after login
                 } else {
-                    alert(data.message || "Login failed. Please try again.");
+                    alert("Login failed, please try again.");
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+            .catch(error => console.error('Error:', error));
         }
 
         function goToAttendance() {
-            const branch = getCookie('branch');
-            if (branch) {
-                const page = branch.toLowerCase() + ".html";
-                window.location.href = page;
+            const role = getCookie('userRole'); // Check user role from cookie
+            if (role === 'Placement') {
+                const branch = getCookie('branch');
+                if (branch) {
+                    const page = branch.toLowerCase() + ".html"; // Redirect to branch-specific page
+                    window.location.href = page;
+                } else {
+                    window.location.href = 'attendence.html'; // Default to the attendance page if no branch
+                }
             } else {
-                window.location.href = 'attendence.html';
+                window.location.href = 'attendence.html'; // If the user is a student, redirect to attendance page
             }
         }
-            window.onload = checkUserRole;
 
+        checkUserRole();
     </script>
 </body>
 </html>

@@ -15,19 +15,26 @@
             background: linear-gradient(45deg, #7b1b8b, #0b92bf, #5e06c3, #5b021e);
             animation: gradientBackground 10s ease-in-out infinite;
         }
-
+        
+        /* Define the keyframes for the background gradient animation */
         @keyframes gradientBackground {
             0% {
-                background: linear-gradient(45deg, #058c99, #991182, #c38106, #a52a05);
+                background: linear-gradient(45deg, #1b7c8b, #bf0bb3, #3c136b, #5b4002);
+            }
+            25% {
+                background: linear-gradient(45deg, #0b92bf, #5e06c3, #7b1b8b, #5b021e);
             }
             50% {
-                background: linear-gradient(45deg, #7b6f6f, #fc5c8c, #f3b92c, #4a7c52);
+                background: linear-gradient(45deg, #5e06c3, #7b1b8b, #0b92bf, #5b021e);
+            }
+            75% {
+                background: linear-gradient(45deg, #5b021e, #7b1b8b, #0b92bf, #5e06c3);
             }
             100% {
-                background: linear-gradient(45deg, #058c99, #991182, #c38106, #a52a05);
+                background: linear-gradient(45deg, #7b1b8b, #0b92bf, #5e06c3, #5b021e);
             }
         }
-
+        
         header {
             padding: 20px;
             font-size: 20px;
@@ -169,7 +176,6 @@
             }
         }
 
-        /* Button Hover Effect */
         a.button {
             display: inline-block;
             padding: 12px 20px;
@@ -183,7 +189,7 @@
 
         a.button:hover {
             transform: scale(1.1);
-            background-color: #ff3311;
+            background-color: #11efff;
         }
 
         /* New Animation Effects */
@@ -233,10 +239,10 @@
     <section>
         <nav>
             <ul>
-                <li><a href="#" id="crt-attendence" onclick="goToAttendance()">CRT (attendance)</a></li>
-                <li><a href="#">MOCK TEST</a></li>
-                <li><a href="#">PLACEMENT STATUS</a></li>
-                <li><a href="#">FEE PAYMENT</a></li>
+                <li><a href="#" id="crt-attendence" onclick="goToAttendance()">CRT (attendance)</a></li><br>
+                <li><a href="#">MOCK TEST</a></li><br>
+                <li><a href="#">PLACEMENT STATUS</a></li><br>
+                <li><a href="#">FEE PAYMENT</a></li><br>
                 <li id="add-student-link" style="display:none;"><a href="newstudent.html">Add New Student</a></li>
 
             </ul>
@@ -246,7 +252,7 @@
     
     <footer>
         <div class="marquee">
-            <b>vigananlara@gmail.com</b>
+            <b> Contact Us: vigananlara@gmail.com</b>
         </div>
     </footer>
    

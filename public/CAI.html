@@ -177,13 +177,43 @@
                         <tr>
                             <td>${student.regdNo}</td>
                             <td>${student.name}</td>
-                            <td>${currentAttendanceType === 'technical' ? student.technicalAttendance : student.nonTechnicalAttendance}</td>
+                            <td>
+                                ${currentAttendanceType === 'technical' ? student.technicalAttendance : student.nonTechnicalAttendance}
+<button class="delete-button" onclick="deleteStudent('${student.regdNo}')">Delete</button>
+                            </td>
                         </tr>
                     `).join('')}
                 </table>
             `;
         }
+        
 
+        function deleteStudent(regdNo) {
+            console.log("Deleting student with regdNo:", regdNo); // Check if this logs the correct student regdNo
+            
+            // Call the backend to delete the student by regdNo
+            fetch(`/deleteStudent/${regdNo}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Student deleted successfully.');
+                    // Remove the student from the displayed list
+                    students = students.filter(student => student.regdNo !== regdNo);
+                    showAttributes();  // Update the UI after deletion
+                } else {
+                    alert('Failed to delete student.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the student.');
+            });
+        }
+        
+             
+        
         function searchStudent() {
             const searchValue = document.getElementById('search').value;
             const filteredStudents = students.filter(student =>

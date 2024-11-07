@@ -311,7 +311,6 @@ if (err) {
 console.error(err);
 return res.json({ success: false, message: 'Failed to add student' });
 }
-res.json({ success: true, message: 'Student added successfully!' });
 });
 });
 
@@ -324,6 +323,57 @@ app.get('/checkUserRole', (req, res) => {
     
     res.json({ success: false, message: 'Not a placement user' });
 });
+// Delete student route
+app.delete('/deleteStudent/:regdNo', (req, res) => {
+    const regdNo = req.params.regdNo;
+    console.log(`Deleting student with regdNo: ${regdNo}`);
+
+    // List of tables to delete from
+    const tables = ['attendance', 'cai_students', 'csd_attendance', 'csm_attendance', 'aiml_attendance'];
+
+    // Start a transaction to ensure all deletions happen atomically
+    db.beginTransaction((err) => {
+        if (err) {
+            console.error('Transaction error:', err);
+            return res.status(500).json({ success: false, message: 'Failed to initiate transaction.' });
+        }
+
+        // Delete the student from all tables
+        const deletePromises = tables.map(table => 
+            new Promise((resolve, reject) => {
+                db.query(`DELETE FROM ${table} WHERE regdNo = ?`, [regdNo], (err, result) => {
+                    if (err) {
+                        reject(`Error deleting from ${table}: ${err}`);
+                    } else {
+                        resolve(`Student deleted from ${table}`);
+                    }
+                });
+            })
+        );
+
+        // Run all delete queries
+        Promise.all(deletePromises)
+            .then(() => {
+                db.commit((err) => {
+                    if (err) {
+                        return db.rollback(() => {
+                            console.error('Transaction commit error:', err);
+                            res.status(500).json({ success: false, message: 'Failed to commit transaction.' });
+                        });
+                    }
+                    res.status(200).json({ success: true, message: 'Student and related records deleted successfully.' });
+                });
+            })
+            .catch((error) => {
+                db.rollback(() => {
+                    console.error(error);
+                    res.status(500).json({ success: false, message: 'Failed to delete student from one or more tables.' });
+                });
+            });
+    });
+});
+
+
 
 
 const PORT = process.env.PORT || 3000;

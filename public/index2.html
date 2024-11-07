@@ -123,30 +123,27 @@
         }
 
         footer {
-            display: flex;
-            font-size: 30px;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            background-color: #333;
+            width: 100%; /* Ensure the footer stretches across the page */
+            position: fixed;
+            bottom: 0; /* Position at the bottom of the page */
+            left: 0;
+            background-color: #1c1c1c;
             color: white;
-            height: 100px;
-            margin: 0;
-            font-family: 'Courier New', Courier, monospace;
-            position: relative;
+            text-align: center;
+            padding: 10px;
+            z-index: 10; /* Ensure it's above other content */
         }
-
+        
         .marquee {
             display: inline-block;
             white-space: nowrap;
             animation: marquee 10s linear infinite;
             font-size: 1.2rem;
-            color: #ffcc00;
+            color: #00e1ff;
             text-transform: uppercase;
-            z-index: 2;
             padding: 0 20px;  /* Add padding to ensure proper spacing */
             background-color: #000; 
-            border-bottom: 10px; /* Optional: Gives a better contrast */
+            border-bottom: 10px solid #4e0986; /* Optional: Gives a better contrast */
         }
         
         @keyframes marquee {
@@ -247,9 +244,11 @@
     </section>
     
     
+    <footer>
         <div class="marquee">
             <b>vigananlara@gmail.com</b>
         </div>
+    </footer>
    
     
     <script>

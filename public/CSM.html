@@ -6,19 +6,22 @@
     <title id="title">CSM</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             margin: 20px;
-            background-color: #f0f8ff; 
-            text-align: center;
+            background: linear-gradient(to right, #56ab2f, #a8e063); /* Gradient background */
+            text-align: center; /* Center text */
             color: #333;
+            animation: fadeIn 1s ease-out;
         }
-
         h1 {
-            color: #4d604d; 
+            color: #4d604d; /* Title color */
             margin-bottom: 20px;
             cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+            transition: color 0.3s ease-in-out;
         }
-
+        h1:hover {
+            color: #ed1fd1; /* Darker color on hover */
+        }
         .branch-dropdown {
             display: none; /* Hidden by default */
             position: absolute;
@@ -28,19 +31,19 @@
             padding: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000; /* Ensure dropdown appears on top */
+            animation: slideDown 0.3s ease-out; /* Dropdown slide-down animation */
         }
-
         .branch-dropdown a {
             display: block;
             padding: 5px 10px;
             color: #333;
             text-decoration: none;
+            transition: background-color 0.2s ease;
         }
-
         .branch-dropdown a:hover {
             background-color: #ddd; /* Light gray on hover */
+            transform: translateX(5px); /* Subtle rightward movement */
         }
-
         .button {
             padding: 10px 20px;
             margin: 10px;
@@ -50,51 +53,85 @@
             border: none;
             border-radius: 5px;
             font-size: 16px; /* Increase button font size */
-            transition: background-color 0.3s; /* Smooth background color transition */
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
-
         .button:hover {
             background-color: #45a049; /* Darker green on hover */
+            transform: translateY(-3px); /* Button lift effect */
         }
-
         #search {
             margin-bottom: 20px;
             padding: 10px;
-            width: 50%;
-            max-width: 300px;
+            width: 50%; /* Centered width */
+            max-width: 300px; /* Maximum width */
             border: 2px solid #4CAF50; /* Green border */
             border-radius: 5px; /* Rounded corners */
             font-size: 16px; /* Increase input font size */
+            transition: border-color 0.3s ease;
         }
-
+        #search:focus {
+            border-color: #073d73; /* Dark border color on focus */
+            outline: none;
+        }
         table {
             border-collapse: collapse;
             margin-top: 20px;
             width: 100%;
-            background-color: white;
+            background-color: white; /* White table background */
             border-radius: 8px; /* Rounded corners for table */
             overflow: hidden; /* Prevent overflow for rounded corners */
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+            opacity: 0;
+            animation: fadeInTable 1s forwards; /* Fade-in effect for the table */
         }
-
         th, td {
             border: 1px solid #ddd; /* Light border for table cells */
             padding: 12px; /* Increased padding for cells */
             text-align: left;
         }
-
         th {
             background-color: #4CAF50; 
             color: white; /* White text for header */
         }
-
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-
         tr:hover {
-            background-color: #ddd;
+            background-color: #47a09a;
+            transform: scale(1.02); /* Slight zoom effect on row hover */
+            transition: transform 0.2s ease;
         }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Fade-in effect for the table */
+        @keyframes fadeInTable {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
     </style>
 </head>
 <body>

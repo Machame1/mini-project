@@ -175,6 +175,7 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                document.cookie = `userRole=${selectedRole}; path=/`;
                 localStorage.setItem('username', username);
 
                 // Handle redirection based on role

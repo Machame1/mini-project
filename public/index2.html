@@ -11,31 +11,52 @@
             font-family: 'Arial', sans-serif;
             height: 100vh;
             overflow: hidden;
+            transition: background-color 0.3s ease-in-out;
+            background: linear-gradient(45deg, #7b1b8b, #0b92bf, #5e06c3, #5b021e);
+            animation: gradientBackground 10s ease-in-out infinite;
         }
+
+        @keyframes gradientBackground {
+            0% {
+                background: linear-gradient(45deg, #058c99, #991182, #c38106, #a52a05);
+            }
+            50% {
+                background: linear-gradient(45deg, #7b6f6f, #fc5c8c, #f3b92c, #4a7c52);
+            }
+            100% {
+                background: linear-gradient(45deg, #058c99, #991182, #c38106, #a52a05);
+            }
+        }
+
         header {
-            background-color: #1c1c1c;
             padding: 20px;
             font-size: 20px;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
+        
         header nav ul {
             list-style: none;
             padding: 0;
         }
+
         header nav li {
             display: inline;
             margin-right: 20px;
         }
+
         header nav a {
             text-decoration: none;
-            color: #ffcc00;
+            color: #b30e0e;
             font-weight: bold;
-            transition: color 0.3s;
+            transition: color 0.3s, transform 0.3s;
         }
+
         header nav a:hover {
             color: #ff9900;
+            transform: scale(1.1);
         }
+
         section {
             display: flex;
             justify-content: center;
@@ -50,7 +71,9 @@
             width: 100%;
             position: relative;
             overflow: hidden;
+            transition: background-size 0.3s ease-in-out;
         }
+
         section::after {
             content: "";
             position: absolute;
@@ -61,46 +84,81 @@
             background: rgba(0, 0, 0, 0.5); /* Overlay for better text visibility */
             z-index: 1;
         }
+
         section nav {
             position: relative;
             z-index: 2;
             text-align: center;
         }
+
         section nav ul {
             list-style: none;
             padding: 0;
         }
+
         section nav a {
             font-size: 40px;
             margin-bottom: 10px;
             color: white;
             text-decoration: none;
             transition: transform 0.3s, color 0.3s;
+            animation: fadeInUp 0.8s ease-out;
         }
+
         section nav a:hover {
             transform: translateY(-5px);
-            color: #ffcc00;
+            color: #c02424;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
         }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         footer {
             display: flex;
             font-size: 30px;
             justify-content: center;
             align-items: center;
             padding: 10px;
-            background-color: #1c1c1c;
+            background-color: #333;
             color: white;
             height: 100px;
             margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            position: relative;
         }
+
         .marquee {
             display: inline-block;
             white-space: nowrap;
             animation: marquee 10s linear infinite;
+            font-size: 1.2rem;
+            color: #ffcc00;
+            text-transform: uppercase;
+            z-index: 2;
+            padding: 0 20px;  /* Add padding to ensure proper spacing */
+            background-color: #000; 
+            border-bottom: 10px; /* Optional: Gives a better contrast */
         }
+        
         @keyframes marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
+            0% {
+                transform: translateX(100%); /* Start outside of the right side */
+            }
+            100% {
+                transform: translateX(-100%); /* End outside of the left side */
+            }
         }
+        
+
         /* Responsive Design */
         @media (max-width: 768px) {
             section {
@@ -109,6 +167,58 @@
             section nav a {
                 font-size: 30px; /* Slightly smaller text on mobile */
             }
+            footer {
+                font-size: 20px;
+            }
+        }
+
+        /* Button Hover Effect */
+        a.button {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #ff5733;
+            color: white;
+            font-size: 18px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        a.button:hover {
+            transform: scale(1.1);
+            background-color: #ff3311;
+        }
+
+        /* New Animation Effects */
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        section nav a {
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        /* Glowing Border Effect */
+        section nav a:hover {
+            border: 2px solid #5a0b9b;
+            box-shadow: 0 0 15px #a15005;
+        }
+
+        /* Smooth Scroll for Links */
+        a {
+            transition: all 0.3s ease;
+        }
+
+        /* Page transition effect */
+        body {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
@@ -130,19 +240,26 @@
                 <li><a href="#">MOCK TEST</a></li>
                 <li><a href="#">PLACEMENT STATUS</a></li>
                 <li><a href="#">FEE PAYMENT</a></li>
+                <li id="add-student-link" style="display:none;"><a href="newstudent.html">Add New Student</a></li>
+
             </ul>
         </nav>
     </section>
     
-    <footer>
+    
         <div class="marquee">
             <b>vigananlara@gmail.com</b>
         </div>
-    </footer>
+   
     
     <script>
-        // Function to get cookie by name
-        function getCookie(name) {
+        function checkUserRole() {
+            const role = getCookie('userRole');
+            if (role === 'Placement') {
+                document.getElementById("add-student-link").style.display = 'block';
+            }
+        }       
+         function getCookie(name) {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) return parts.pop().split(';').shift();
@@ -181,6 +298,8 @@
                 window.location.href = 'attendence.html';
             }
         }
+            window.onload = checkUserRole;
+
     </script>
 </body>
 </html>

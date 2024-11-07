@@ -281,10 +281,51 @@ app.post('/updateProfile', (req, res) => {
         });
     });
 });
+// Function to dynamically map branches to their corresponding tables
+function getAttendanceTableForBranch(branch) {
+    const branchMap = {
+        cai: 'cai_students',
+        cse: 'cse_attendance',
+        csm: 'csm_attendance',
+        aiml: 'aiml_attendance',
+        csd: 'csd_attendance',
+    };
 
-// Helper function to get the correct attendance table name based on branch
+    return branchMap[branch.toLowerCase()] || null; // Return null if the branch is not found
+}
 
-// Server initialization
+app.post('/addStudent', (req, res) => {
+    const { regdNo, name,  technicalAttendance, nonTechnicalAttendance, branch } = req.body;
+
+    const table = getAttendanceTableForBranch(branch);
+
+    if (!table) {
+        return res.json({ success: false, message: 'Invalid branch specified' });
+    }
+
+    const query = `INSERT INTO ${table} (regdNo, name, technicalAttendance, nonTechnicalAttendance, branch)
+    VALUES (?, ?, ?, ?, ?)`;
+
+db.query(query, [regdNo, name, technicalAttendance, nonTechnicalAttendance, branch], (err, results) => {
+if (err) {
+console.error(err);
+return res.json({ success: false, message: 'Failed to add student' });
+}
+res.json({ success: true, message: 'Student added successfully!' });
+});
+});
+
+app.get('/checkUserRole', (req, res) => {
+    const role = req.query.role;
+
+    if (role === 'placement') {
+        return res.json({ success: true, message: 'Placement user' });
+    }
+    
+    res.json({ success: false, message: 'Not a placement user' });
+});
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

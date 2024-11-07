@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement - Add New Student</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(45deg, #058c99, #991182, #c38106, #a52a05);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+        }
+
+        /* Background gradient animation */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 0%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 100%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            animation: fadeInUp 1s ease-in-out;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input, select, button {
+            padding: 14px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-3px);
+            animation: pulseButton 1s infinite;
+        }
+
+        button:active {
+            background-color: #388e3c;
+            transform: translateY(1px);
+        }
+
+        #addStudentMessage {
+            margin-top: 20px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        /* Fade-in from the bottom */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Pulse effect on the submit button */
+        @keyframes pulseButton {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Alert box */
+        .alert {
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+            margin-top: 20px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+
+        /* Fade-in animation for the alert */
+        @keyframes alertFadeIn {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Add New Student</h2>
+        <form id="addStudentForm">
+            <input type="text" id="regdNo" placeholder="Registration Number" required>
+            <input type="text" id="name" placeholder="Full Name" required>
+            <select id="branch" required>
+                <option value="">Select Branch</option>
+                <option value="CAI">CAI</option>
+                <option value="CSE">CSE</option>
+                <option value="CSM">CSM</option>
+                <option value="AIML">AIML</option>
+                <option value="CSD">CSD</option>
+            </select>
+            <input type="number" id="technicalAttendance" placeholder="Technical Attendance (%)" required>
+            <input type="number" id="nonTechnicalAttendance" placeholder="Non-Technical Attendance (%)" required>
+            <button type="submit">Add Student</button>
+        </form>
+
+        <div id="addStudentMessage"></div>
+        <div class="alert" id="alertMessage">New student added successfully!</div>
+    </div>
+
+    <script>
+        document.getElementById('addStudentForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            // Capture form data
+            const regdNo = document.getElementById('regdNo').value;
+            const name = document.getElementById('name').value;
+            const branch = document.getElementById('branch').value;
+            const technicalAttendance = document.getElementById('technicalAttendance').value;
+            const nonTechnicalAttendance = document.getElementById('nonTechnicalAttendance').value;
+
+            // Validate inputs
+            if (!regdNo || !name || !branch || technicalAttendance === '' || nonTechnicalAttendance === '') {
+                document.getElementById('addStudentMessage').innerText = 'All fields are required and cannot be empty';
+                document.getElementById('addStudentMessage').style.color = '#D8000C'; // Error color
+                return;
+            }
+
+            try {
+                // Send POST request to backend
+                const response = await fetch('/addStudent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        regdNo,
+                        name,
+                        branch,
+                        technicalAttendance,
+                        nonTechnicalAttendance
+                    })
+                });
+
+                // Handle response
+                const data = await response.json();
+                const messageElement = document.getElementById('addStudentMessage');
+                messageElement.innerText = data.message;
+
+                if (data.success) {
+                    messageElement.style.color = '#006400'; // Success color
+                    document.getElementById('addStudentForm').reset(); // Clear form
+                    
+                    // Show the success alert with animation
+                    const alertMessage = document.getElementById('alertMessage');
+                    alertMessage.style.display = 'block';
+                    alertMessage.style.animation = 'alertFadeIn 1s ease-in-out';
+                    setTimeout(() => { alertMessage.style.display = 'none'; }, 3000); // Hide after 3 seconds
+                } else {
+                    messageElement.style.color = '#D8000C'; // Error color
+                }
+            } catch (error) {
+                console.error('Error adding student:', error);
+                document.getElementById('addStudentMessage').innerText = 'Error adding student';
+                document.getElementById('addStudentMessage').style.color = '#D8000C'; // Error color
+            }
+        });
+    </script>
+</body>
+</html>

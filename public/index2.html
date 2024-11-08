@@ -263,12 +263,13 @@
                 document.getElementById("add-student-link").style.display = 'block';
             }
         }       
-
+    
         function getCookie(name) {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
+    
 
         // Login function with username and password inputs
         function login() {
@@ -285,8 +286,8 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.cookie = `userRole=${data.role}`;
-                    document.cookie = `branch=${data.branch}`;
+                    document.cookie = `userRole=${data.role}; path=/`;
+                    document.cookie = `branch=${data.branch}; path=/`;
                     window.location.href = data.redirectUrl; // Redirect after login
                 } else {
                     alert("Login failed, please try again.");
@@ -299,7 +300,8 @@
             const role = getCookie('userRole'); // Check user role from cookie
             if (role === 'Placement') {
                 const branch = getCookie('branch');
-                if (branch) {
+                
+                if (branch) { // Check if branch is defined
                     const page = branch.toLowerCase() + ".html"; // Redirect to branch-specific page
                     window.location.href = page;
                 } else {
@@ -309,8 +311,11 @@
                 window.location.href = 'attendence.html'; // If the user is a student, redirect to attendance page
             }
         }
-
+        
+    
         checkUserRole();
+
+        
     </script>
 </body>
 </html>

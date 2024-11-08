@@ -372,7 +372,32 @@ app.delete('/deleteStudent/:regdNo', (req, res) => {
             });
     });
 });
+app.post('/reset-password', (req, res) => {
+    const { email, newPassword } = req.body;
 
+    // Validate input
+    if (!email || !newPassword) {
+        return res.status(400).json({ success: false, message: "Email and new password are required." });
+    }
+
+    // Hash the new password
+    const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
+    // Update the password in the database
+    const query = 'UPDATE users SET password = ? WHERE email = ?';
+    db.query(query, [hashedPassword, email], (err, result) => {
+        if (err) {
+            console.error('Error updating password:', err);
+            return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        res.json({ success: true, message: 'Password reset successfully' });
+    });
+});
 
 
 

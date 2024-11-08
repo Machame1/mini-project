@@ -13,7 +13,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(45deg, #058c99, #991182, #c38106, #a52a05);
+            background: linear-gradient(45deg, #4caf50, #8bc34a, #ffeb3b, #ff5722);
             background-size: 400% 400%;
             animation: gradientAnimation 15s ease infinite;
         }
@@ -165,7 +165,7 @@
 
             try {
                 // Send POST request to backend
-                const response = await fetch('/addStudent', {
+                const response = await fetch('/add-student', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

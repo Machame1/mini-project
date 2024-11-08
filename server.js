@@ -282,10 +282,11 @@ app.post('/updateProfile', (req, res) => {
     });
 });
 // Function to dynamically map branches to their corresponding tables
+// Function to get the correct attendance table for each branch
 function getAttendanceTableForBranch(branch) {
     const branchMap = {
         cai: 'cai_students',
-        cse: 'cse_attendance',
+        cse: 'attendance',
         csm: 'csm_attendance',
         aiml: 'aiml_attendance',
         csd: 'csd_attendance',
@@ -294,25 +295,51 @@ function getAttendanceTableForBranch(branch) {
     return branchMap[branch.toLowerCase()] || null; // Return null if the branch is not found
 }
 
-app.post('/addStudent', (req, res) => {
-    const { regdNo, name,  technicalAttendance, nonTechnicalAttendance, branch } = req.body;
+// Route to add a new student
+app.post('/add-student', (req, res) => {
+    const { regdNo, name, technicalAttendance, nonTechnicalAttendance, branch } = req.body;
 
-    const table = getAttendanceTableForBranch(branch);
+    // Debugging: log received data
+    console.log("Received data:", req.body);
 
-    if (!table) {
-        return res.json({ success: false, message: 'Invalid branch specified' });
+    // Validate inputs
+    if (!regdNo || !name || technicalAttendance == null || nonTechnicalAttendance == null || !branch) {
+        return res.json({ success: false, message: 'All fields are required and cannot be null.' });
     }
 
-    const query = `INSERT INTO ${table} (regdNo, name, technicalAttendance, nonTechnicalAttendance, branch)
-    VALUES (?, ?, ?, ?, ?)`;
+    // Get the appropriate table for the branch
+    const tableName = getAttendanceTableForBranch(branch);
+    if (!tableName) {
+        return res.json({ success: false, message: 'Invalid branch selected.' });
+    }
 
-db.query(query, [regdNo, name, technicalAttendance, nonTechnicalAttendance, branch], (err, results) => {
-if (err) {
-console.error(err);
-return res.json({ success: false, message: 'Failed to add student' });
-}
+    // Check if the student with the same regdNo already exists
+    const checkQuery = `SELECT * FROM ${tableName} WHERE regdNo = ?`;
+    db.query(checkQuery, [regdNo], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.json({ success: false, message: 'Database error occurred' });
+        }
+        
+        // If a student with this regdNo already exists, return an error message
+        if (results.length > 0) {
+            return res.json({ success: false, message: `Student with registration number ${regdNo} already exists.` });
+        }
+
+        // If no duplicate, proceed to insert the new student
+        const insertQuery = `INSERT INTO ${tableName} (regdNo, name, technicalAttendance, nonTechnicalAttendance, branch) VALUES (?, ?, ?, ?, ?)`;
+        db.query(insertQuery, [regdNo, name, technicalAttendance, nonTechnicalAttendance, branch], (err, results) => {
+            if (err) {
+                if (err.code === 'ER_DUP_ENTRY') {
+                    return res.json({ success: false, message: 'Duplicate registration number. Please use a unique regdNo.' });
+                }
+                console.error(err);
+                return res.json({ success: false, message: 'Failed to add student' });
+            }
+        });
+    });
 });
-});
+
 
 app.get('/checkUserRole', (req, res) => {
     const role = req.query.role;

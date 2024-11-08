@@ -13,14 +13,18 @@
             color: #333;
             animation: fadeIn 1s ease-out;
         }
-        h1 {
-            color: #4d604d; /* Title color */
+        #title {
+            color: #4d604d;
             margin-bottom: 20px;
-            cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+        }
+        
+        #title span {
+            cursor: pointer; /* Show pointer cursor only over the "CSE" text */
             transition: color 0.3s ease-in-out;
         }
-        h1:hover {
-            color: #ed1fd1; /* Darker color on hover */
+        
+        #title span:hover {
+            color: #ed1fd1; /* Change color on hover only for the "CSE" text */
         }
         .branch-dropdown {
             display: none; /* Hidden by default */
@@ -155,7 +159,7 @@ background-color: rgb(124, 38, 38);
     </style>
 </head>
 <body>
-    <h1 id="title" onclick="toggleDropdown()">AIML</h1>
+    <h1 id="title"><span onclick="toggleDropdown()">AIML</span> </h1>
     
     <div class="branch-dropdown" id="branch-dropdown">
         <a href="cai.html">CAI</a>
@@ -314,7 +318,7 @@ background-color: rgb(124, 38, 38);
 
         window.onclick = function(event) {
             const dropdown = document.getElementById('branch-dropdown');
-            if (!event.target.matches('#title')) {
+            if (!event.target.matches('#title span')) {
                 if (dropdown.style.display === 'block') {
                     dropdown.style.display = 'none';
                 }

@@ -92,6 +92,22 @@
             .signup-container button:active {
                 transform: translateY(0);
             }
+            #otpBlock {
+                display: flex;
+                justify-content: center;
+                gap: 10px; /* Space between input blocks */
+                margin-bottom: 10px;
+            }
+            
+            .otp-input {
+                width: 40px;
+                height: 40px;
+                text-align: center;
+                font-size: 20px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+            
             .error {
                 color: #e74c3c;
                 text-align: center;
@@ -206,16 +222,27 @@
         </form>
     
         <!-- OTP Section (Initially hidden) -->
-        <div id="otpSection" style="display: none;">
-            <h3>Enter OTP sent to your email:</h3>
-            <input type="text" id="otp" placeholder="Enter OTP" required>
-            <button onclick="verifyOtp()">Verify OTP</button>
-            <p id="otpMessage"></p>
-        </div>
+       <!-- OTP Section (Initially hidden) -->
+<div id="otpSection" style="display: none;">
+    <h3>Enter OTP sent to your email:</h3>
+    <div id="otpBlock">
+        <input type="text" class="otp-input" maxlength="1" id="otp1" oninput="focusNextInput(1)">
+        <input type="text" class="otp-input" maxlength="1" id="otp2" oninput="focusNextInput(2)">
+        <input type="text" class="otp-input" maxlength="1" id="otp3" oninput="focusNextInput(3)">
+        <input type="text" class="otp-input" maxlength="1" id="otp4" oninput="focusNextInput(4)">
+        <input type="text" class="otp-input" maxlength="1" id="otp5" oninput="focusNextInput(5)">
+        <input type="text" class="otp-input" maxlength="1" id="otp6">
+    </div>
+    <button onclick="verifyOtp()">Verify OTP</button>
+    <p id="otpMessage"></p>
+</div>
     
-        <div id="successAlert" class="success-alert">
-            Verification email sent! Please check your inbox.
-        </div>
+<div id="successAlert" class="success-alert">
+    Verification email sent! Please check your inbox.
+</div>
+
+    
+        >
     </div>
     
     <script>
@@ -296,10 +323,27 @@
         }
     
         // Handle OTP verification
+        function focusNextInput(currentIndex) {
+            const currentInput = document.getElementById(`otp${currentIndex}`);
+            const nextInput = document.getElementById(`otp${currentIndex + 1}`);
+            
+            if (currentInput.value.length === 1 && nextInput) {
+                nextInput.focus();
+            }
+        }
+        
+        // Handle OTP verification
         function verifyOtp() {
-            const otp = document.getElementById("otp").value;
+            // Collect OTP from individual input fields
+            const otp = Array.from({ length: 6 }, (_, i) => document.getElementById(`otp${i + 1}`).value).join('');
+            
+            if (otp.length !== 6) {
+                document.getElementById("otpMessage").textContent = "Please enter a complete OTP.";
+                return;
+            }
+           
             const email = document.getElementById("email").value;
-    
+            
             fetch('/verify-otp', {
                 method: 'POST',
                 headers: {
@@ -312,7 +356,7 @@
                 if (result.success) {
                     document.getElementById("otpMessage").textContent = 'Account successfully verified!';
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        window.location.href = 'index.html'; // Redirect to login page after successful verification
                     }, 2000);
                 } else {
                     document.getElementById("otpMessage").textContent = result.message;

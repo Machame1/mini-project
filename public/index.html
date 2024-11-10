@@ -6,6 +6,20 @@
     <title>Login Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        #otpBlock {
+            display: flex;
+            justify-content: center;
+            gap: 5px; /* space between blocks */
+            margin-bottom: 10px;
+        }
+        
+        .otp-input {
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            font-size: 18px;
+        }
+        
         body {
             font-family: 'Roboto', sans-serif;
             background-image: url('project images/background image2.jpg'); /* Add your background image here */
@@ -269,11 +283,18 @@ button[type="button"]:hover {
         <input type="text" id="resetEmail" placeholder="Enter your email" required><br>
         <button onclick="requestOtp()">Request OTP</button><br><br>
 
-        <!-- OTP and new password fields -->
-        <input type="text" id="otp" placeholder="Enter OTP" required><br>
+        <!-- OTP input as blocks -->
+        <div id="otpBlock">
+            <input type="text" class="otp-input" maxlength="1" id="otp1" oninput="focusNextInput(1)">
+            <input type="text" class="otp-input" maxlength="1" id="otp2" oninput="focusNextInput(2)">
+            <input type="text" class="otp-input" maxlength="1" id="otp3" oninput="focusNextInput(3)">
+            <input type="text" class="otp-input" maxlength="1" id="otp4" oninput="focusNextInput(4)">
+            <input type="text" class="otp-input" maxlength="1" id="otp5" oninput="focusNextInput(5)">
+            <input type="text" class="otp-input" maxlength="1" id="otp6">
+        </div>
         <button onclick="verifyOtp()" id="verifyOtpButton">Verify OTP</button><br><br>
-        
-        <!-- These fields will only be enabled if OTP is verified -->
+
+        <!-- New password fields, enabled if OTP is verified -->
         <input type="password" id="newPassword" placeholder="Enter new password" disabled required><br>
         <input type="password" id="confirmPassword" placeholder="Confirm new password" disabled required><br>
         <button type="button" onclick="resetPassword()" disabled id="resetButton">Submit</button>
@@ -281,6 +302,7 @@ button[type="button"]:hover {
         <div id="resetErrorMessage" class="error"></div>
     </div>
 </div>
+
 
 <script>
     function getRandomColor() {
@@ -373,12 +395,21 @@ button[type="button"]:hover {
         document.getElementById("forgotPasswordModal").style.display = "none";
         resetFields();
     }
+    function focusNextInput(currentIndex) {
+        const currentInput = document.getElementById(`otp${currentIndex}`);
+        const nextInput = document.getElementById(`otp${currentIndex + 1}`);
+        
+        if (currentInput.value.length === 1 && nextInput) {
+            nextInput.focus();
+        }
+    }
 
     function verifyOtp() {
-        const otp = document.getElementById("otp").value.trim();
+        // Collect OTP from individual input fields
+        const otp = Array.from({ length: 6 }, (_, i) => document.getElementById(`otp${i + 1}`).value).join('');
         const email = document.getElementById("resetEmail").value.trim();
        
-        if (!otp || !email) {
+        if (otp.length !== 6 || !email) {
             alert("Please enter both OTP and email.");
             return;
         }
@@ -386,24 +417,21 @@ button[type="button"]:hover {
         fetch('/verify_otp', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                otp: otp,
-                email: email
-            })
+            body: JSON.stringify({ otp, email })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 alert("OTP verified successfully!");
                 
-                // Enable the password fields and reset button upon successful OTP verification
+                // Enable new password fields and submit button
                 document.getElementById("newPassword").disabled = false;
                 document.getElementById("confirmPassword").disabled = false;
                 document.getElementById("resetButton").disabled = false;
     
-                // Hide the OTP input and verify button
-                document.getElementById("otp").style.display = "none";
-                document.getElementById("verifyOtpButton").style.display = "none"; // Assuming the button has id 'verifyOtpButton'
+                // Hide OTP input and verify button
+                document.getElementById("otpBlock").style.display = "none";
+                document.getElementById("verifyOtpButton").style.display = "none";
             } else {
                 document.getElementById("resetErrorMessage").innerText = data.message || "Invalid OTP. Please try again.";
             }

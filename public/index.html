@@ -261,14 +261,23 @@ button[type="button"]:hover {
     </form>
 </div>
 
+
 <div id="forgotPasswordModal" class="modal">
     <div class="modal-content">
         <span class="modal-close" onclick="closeForgotPasswordModal()">&times;</span>
         <h2>Reset Password</h2>
         <input type="text" id="resetEmail" placeholder="Enter your email" required><br>
-        <input type="password" id="newPassword" placeholder="Enter new password" required><br>
-        <input type="password" id="confirmPassword" placeholder="Confirm new password" required><br>
-        <button type="button" onclick="resetPassword()">Submit</button>
+        <button onclick="requestOtp()">Request OTP</button><br><br>
+
+        <!-- OTP and new password fields -->
+        <input type="text" id="otp" placeholder="Enter OTP" required><br>
+        <button onclick="verifyOtp()" id="verifyOtpButton">Verify OTP</button><br><br>
+        
+        <!-- These fields will only be enabled if OTP is verified -->
+        <input type="password" id="newPassword" placeholder="Enter new password" disabled required><br>
+        <input type="password" id="confirmPassword" placeholder="Confirm new password" disabled required><br>
+        <button type="button" onclick="resetPassword()" disabled id="resetButton">Submit</button>
+
         <div id="resetErrorMessage" class="error"></div>
     </div>
 </div>
@@ -283,29 +292,23 @@ button[type="button"]:hover {
         return color;
     }
     
-    // Apply random color to login page elements
     function applyRandomColors() {
-        // Set random colors for elements
-        const bodyColor = getRandomColor();
-        document.body.style.backgroundColor = bodyColor;
-    
+        document.body.style.backgroundColor = getRandomColor();
         const button = document.querySelector('button');
-        const buttonColor = getRandomColor(); // Store the random color for button
+        const buttonColor = getRandomColor();
         button.style.backgroundColor = buttonColor;
-        button.style.borderColor = getRandomColor(); // Border color also random
-    
-        // Set random hover color for button
+        button.style.borderColor = getRandomColor();
+
         button.addEventListener('mouseenter', function() {
-            button.style.backgroundColor = getRandomColor(); // Random color on hover
+            button.style.backgroundColor = getRandomColor();
         });
         button.addEventListener('mouseleave', function() {
-            button.style.backgroundColor = buttonColor; // Reset to original random color
+            button.style.backgroundColor = buttonColor;
         });
-    
+
         const links = document.querySelectorAll('.login-container a');
         links.forEach(link => link.style.color = getRandomColor());
     }
-    // Call the function to apply random colors
     window.onload = applyRandomColors;
 
     function updateUserLabel() {
@@ -339,7 +342,6 @@ button[type="button"]:hover {
                 document.cookie = `userRole=${selectedRole}; path=/`;
                 localStorage.setItem('username', username);
 
-                // Handle redirection based on role
                 switch (selectedRole) {
                     case 'Student':
                         window.location.href = 'index2.html';
@@ -364,33 +366,93 @@ button[type="button"]:hover {
     }
 
     function openForgotPasswordModal() {
-        document.getElementById("forgotPasswordModal").style.display = "flex";
+        document.getElementById("forgotPasswordModal").style.display = "block";
     }
 
-    function closeForgotPasswordModal(event = null) {
-        if (event) {
-            if (event.target.id === 'forgotPasswordModal') {
-                document.getElementById("forgotPasswordModal").style.display = "none";
-                resetFields();
+    function closeForgotPasswordModal() {
+        document.getElementById("forgotPasswordModal").style.display = "none";
+        resetFields();
+    }
 
-            }
-        } else {
-            document.getElementById("forgotPasswordModal").style.display = "none";
-            resetFields();
-
+    function verifyOtp() {
+        const otp = document.getElementById("otp").value.trim();
+        const email = document.getElementById("resetEmail").value.trim();
+       
+        if (!otp || !email) {
+            alert("Please enter both OTP and email.");
+            return;
         }
+       
+        fetch('/verify_otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                otp: otp,
+                email: email
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("OTP verified successfully!");
+                
+                // Enable the password fields and reset button upon successful OTP verification
+                document.getElementById("newPassword").disabled = false;
+                document.getElementById("confirmPassword").disabled = false;
+                document.getElementById("resetButton").disabled = false;
+    
+                // Hide the OTP input and verify button
+                document.getElementById("otp").style.display = "none";
+                document.getElementById("verifyOtpButton").style.display = "none"; // Assuming the button has id 'verifyOtpButton'
+            } else {
+                document.getElementById("resetErrorMessage").innerText = data.message || "Invalid OTP. Please try again.";
+            }
+        })
+        .catch(error => {
+            console.error("Error verifying OTP:", error);
+            document.getElementById("resetErrorMessage").innerText = "Server error. Please try again later.";
+        });
     }
+    
+    function requestOtp() {
+        const email = document.getElementById("resetEmail").value.trim();
+        
+        if (!email) {
+            alert("Please enter your email.");
+            return;
+        }
 
-    document.getElementById("forgotPasswordModal").addEventListener("click", closeForgotPasswordModal);
+        fetch('/forgot-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error requesting OTP:", error);
+            document.getElementById("resetErrorMessage").innerText = "Server error. Please try again later.";
+        });
+    }
 
     function resetPassword() {
         const email = document.getElementById("resetEmail").value.trim();
+        const otp = document.getElementById("otp").value.trim();
         const newPassword = document.getElementById("newPassword").value.trim();
         const confirmPassword = document.getElementById("confirmPassword").value.trim();
         const resetErrorMessage = document.getElementById("resetErrorMessage");
+        
+        if (!email || !otp || !newPassword || !confirmPassword) {
+            resetErrorMessage.innerText = "Please fill in all fields.";
+            return;
+        }
 
         if (newPassword !== confirmPassword) {
-            resetErrorMessage.innerHTML = "Passwords do not match.";
+            resetErrorMessage.innerText = "Passwords do not match.";
             return;
         }
 
@@ -399,30 +461,33 @@ button[type="button"]:hover {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 email: email,
+                otp: otp,
                 newPassword: newPassword
             })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert("Password reset successfully!");
-                closeForgotPasswordModal();
+                alert('Password reset successfully!');
+                resetFields();
             } else {
-                resetErrorMessage.innerHTML = "fill the fields";
+                resetErrorMessage.innerText = data.message || "An error occurred. Please try again.";
             }
         })
         .catch(error => {
-            resetErrorMessage.innerHTML = "fill the fields";
+            resetErrorMessage.innerText = "An error occurred. Please try again.";
         });
     }
     function resetFields() {
         document.getElementById("resetEmail").value = "";
+        document.getElementById("otp").value = "";
         document.getElementById("newPassword").value = "";
         document.getElementById("confirmPassword").value = "";
-        document.getElementById("resetErrorMessage").innerHTML = ""; 
+        document.getElementById("resetErrorMessage").innerText = "";
+        document.getElementById("newPassword").disabled = true;
+        document.getElementById("confirmPassword").disabled = true;
+        document.getElementById("resetButton").disabled = true;
     }
-    
-    resetFields();
 </script>
 
 </body>

@@ -118,6 +118,120 @@
             color: #45a049;
             text-shadow: 0 0 5px #4CAF50;
         }
+
+        /* Modal styles */
+        #forgotPasswordModal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+        }
+
+        /* Modal Background */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+    animation: fadeIn 0.5s ease-in-out; /* Fade in effect */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    animation: slideUp 0.3s ease-out;
+}
+
+/* Close Button */
+.modal-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Input Fields */
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+    border: 1px solid #4CAF50;
+}
+
+/* Submit Button */
+button[type="button"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+button[type="button"]:hover {
+    background-color: #17641b;
+}
+
+/* Error Message Styling */
+#errorMessage {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Animation for Fade-in effect */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Animation for Slide-up effect */
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -143,20 +257,72 @@
         <button type="button" onclick="validateLogin()">Login</button>
         <div id="errorMessage" class="error"></div>
         <a href="signup.html"><u>Don't have an account? Sign up</u></a>
+        <a href="#" onclick="openForgotPasswordModal()"><u>Forgot Password?</u></a>
     </form>
 </div>
 
+<div id="forgotPasswordModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeForgotPasswordModal()">&times;</span>
+        <h2>Reset Password</h2>
+        <input type="text" id="resetEmail" placeholder="Enter your email" required><br>
+        <input type="password" id="newPassword" placeholder="Enter new password" required><br>
+        <input type="password" id="confirmPassword" placeholder="Confirm new password" required><br>
+        <button type="button" onclick="resetPassword()">Submit</button>
+        <div id="resetErrorMessage" class="error"></div>
+    </div>
+</div>
+
 <script>
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+    
+    // Apply random color to login page elements
+    function applyRandomColors() {
+        // Set random colors for elements
+        const bodyColor = getRandomColor();
+        document.body.style.backgroundColor = bodyColor;
+    
+        const button = document.querySelector('button');
+        const buttonColor = getRandomColor(); // Store the random color for button
+        button.style.backgroundColor = buttonColor;
+        button.style.borderColor = getRandomColor(); // Border color also random
+    
+        // Set random hover color for button
+        button.addEventListener('mouseenter', function() {
+            button.style.backgroundColor = getRandomColor(); // Random color on hover
+        });
+        button.addEventListener('mouseleave', function() {
+            button.style.backgroundColor = buttonColor; // Reset to original random color
+        });
+    
+        const links = document.querySelectorAll('.login-container a');
+        links.forEach(link => link.style.color = getRandomColor());
+    }
+    // Call the function to apply random colors
+    window.onload = applyRandomColors;
+
     function updateUserLabel() {
-        var selectedRole = document.getElementById("userRole").value;
+        const selectedRole = document.getElementById("userRole").value;
         document.getElementById("userLabel").innerText = "Login as: " + selectedRole;
     }
 
     function validateLogin() {
-        var username = document.getElementById("username").value.trim();
-        var password = document.getElementById("password").value.trim();
-        var selectedRole = document.getElementById("userRole").value.trim();
-        var errorMessage = document.getElementById("errorMessage");
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const selectedRole = document.getElementById("userRole").value;
+        const errorMessage = document.getElementById("errorMessage");
+
+        if (selectedRole === 'select') {
+            errorMessage.innerHTML = "Please select a user role.";
+            return;
+        }
 
         fetch('/login', {
             method: 'POST',
@@ -170,37 +336,93 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                document.cookie = `userRole=${selectedRole}; path=/`;
                 localStorage.setItem('username', username);
-                window.location.href = data.redirectPage;
+
+                // Handle redirection based on role
+                switch (selectedRole) {
+                    case 'Student':
+                        window.location.href = 'index2.html';
+                        break;
+                    case 'Admin':
+                        window.location.href = 'index3.html';
+                        break;
+                    case 'Deo':
+                        window.location.href = 'fee.html';
+                        break;
+                    case 'Placement':
+                        window.location.href = 'index3.html';
+                        break;
+                }
             } else {
-                errorMessage.innerHTML = data.message;
+                errorMessage.innerHTML = "Invalid credentials. Please try again.";
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            errorMessage.innerHTML = "An error occurred while logging in.";
+            errorMessage.innerHTML = "An error occurred. Please try again.";
         });
     }
 
-    function getRandomColor() {
-        let letters = '0123456789ABCDEF';
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
+    function openForgotPasswordModal() {
+        document.getElementById("forgotPasswordModal").style.display = "flex";
+    }
+
+    function closeForgotPasswordModal(event = null) {
+        if (event) {
+            if (event.target.id === 'forgotPasswordModal') {
+                document.getElementById("forgotPasswordModal").style.display = "none";
+                resetFields();
+
+            }
+        } else {
+            document.getElementById("forgotPasswordModal").style.display = "none";
+            resetFields();
+
         }
-        return color;
     }
 
-    function applyRandomStyles() {
-        const buttonColor = getRandomColor();
-        const shadowColor = getRandomColor();
+    document.getElementById("forgotPasswordModal").addEventListener("click", closeForgotPasswordModal);
 
-        document.querySelector('.login-container').style.backgroundColor = getRandomColor();
-        document.querySelector('button').style.backgroundColor = buttonColor;
-        document.querySelector('h2').style.textShadow = `0 0 10px ${shadowColor}, 0 0 20px ${shadowColor}`;
+    function resetPassword() {
+        const email = document.getElementById("resetEmail").value.trim();
+        const newPassword = document.getElementById("newPassword").value.trim();
+        const confirmPassword = document.getElementById("confirmPassword").value.trim();
+        const resetErrorMessage = document.getElementById("resetErrorMessage");
+
+        if (newPassword !== confirmPassword) {
+            resetErrorMessage.innerHTML = "Passwords do not match.";
+            return;
+        }
+
+        fetch('/reset-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: email,
+                newPassword: newPassword
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Password reset successfully!");
+                closeForgotPasswordModal();
+            } else {
+                resetErrorMessage.innerHTML = "fill the fields";
+            }
+        })
+        .catch(error => {
+            resetErrorMessage.innerHTML = "fill the fields";
+        });
     }
-
-    window.onload = applyRandomStyles;
+    function resetFields() {
+        document.getElementById("resetEmail").value = "";
+        document.getElementById("newPassword").value = "";
+        document.getElementById("confirmPassword").value = "";
+        document.getElementById("resetErrorMessage").innerHTML = ""; 
+    }
+    
+    resetFields();
 </script>
 
 </body>

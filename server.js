@@ -29,16 +29,15 @@ db.connect(err => {
 
 const saltRounds = 10;
 
-// Email transporter configuration
-// const transporter = nodemailer.createTransport({
-//     host: 'smtp.gmail.com',
-//     port: 465, // or 465
-//     secure: true, // true for 465, false for other ports
-//     auth: {
-//         user: 'vignanaiml@gmail.com', 
-//         pass: 'grnh vrcp hffd efyj' 
-//     },
-// });
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465, // or 465
+    secure: true, // true for 465, false for other ports
+    auth: {
+        user: 'vignanaiml@gmail.com', 
+        pass: 'grnh vrcp hffd efyj' 
+    },
+});
 function generateOtp() {
     return crypto.randomInt(100000, 999999).toString(); // Generate a 6-digit OTP
 }
@@ -399,33 +398,155 @@ app.delete('/deleteStudent/:regdNo', (req, res) => {
             });
     });
 });
-app.post('/reset-password', (req, res) => {
-    const { email, newPassword } = req.body;
-
-    // Validate input
-    if (!email || !newPassword) {
-        return res.status(400).json({ success: false, message: "Email and new password are required." });
+app.post("/forgot-password", (req, res) => {
+    const { email } = req.body;
+    
+    if (!email) {
+        return res.status(400).json({ message: "Email is required." });
     }
 
-    // Hash the new password
-    const hashedPassword = bcrypt.hashSync(newPassword, 10);
-
-    // Update the password in the database
-    const query = 'UPDATE users SET password = ? WHERE email = ?';
-    db.query(query, [hashedPassword, email], (err, result) => {
+    db.query("SELECT * FROM users WHERE email = ?", [email], (err, results) => {
         if (err) {
-            console.error('Error updating password:', err);
-            return res.status(500).json({ success: false, message: 'Internal Server Error' });
+            console.error('Database error:', err);
+            return res.status(500).json({ message: "Database error." });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ message: "Email not found." });
         }
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        res.json({ success: true, message: 'Password reset successfully' });
+        db.query(
+            "UPDATE users SET otp = ? WHERE email = ?",
+            [otp, email],
+            (err) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ message: "Database error." });
+                }
+
+                const mailOptions = {
+                    from: "vignanaiml@gmail.com",
+                    to: email,
+                    subject: "Password Reset OTP",
+                    text: `Your OTP for password reset is ${otp}`
+                };
+
+                transporter.sendMail(mailOptions, (err, info) => {
+                    if (err) {
+                        console.error('Email error:', err);
+                        return res.status(500).json({ message: "Failed to send OTP." });
+                    }
+                    res.status(200).json({ message: "OTP sent to your email." });
+                });
+            }
+        );
     });
 });
+// Route to reset password with OTP verification
+app.post("/reset-password", (req, res) => {
+    const { email, otp, newPassword } = req.body;
 
+    if (!email || !otp || !newPassword) {
+        return res.status(400).json({ 
+            success: false, 
+            message: "All fields are required." 
+        });
+    }
+
+    db.query(
+        "SELECT * FROM users WHERE email = ? AND otp = ?", 
+        [email, otp], 
+        async (err, results) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ 
+                    success: false, 
+                    message: "Database error." 
+                });
+            }
+            
+            if (results.length === 0) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: "Invalid OTP or email." 
+                });
+            }
+
+            try {
+                const hashedPassword = await bcrypt.hash(newPassword, 10);
+                
+                db.query(
+                    "UPDATE users SET password = ?, otp = NULL WHERE email = ?",
+                    [hashedPassword, email],
+                    (err) => {
+                        if (err) {
+                            console.error('Database error:', err);
+                            return res.status(500).json({ 
+                                success: false, 
+                                message: "Failed to reset password." 
+                            });
+                        }
+                        
+                        res.status(200).json({ 
+                            success: true, 
+                            message: "Password reset successful." 
+                        });
+                    }
+                );
+            } catch (error) {
+                console.error('Hashing error:', error);
+                res.status(500).json({ 
+                    success: false, 
+                    message: "Error processing password." 
+                });
+            }
+        }
+    );
+});
+
+app.post('/verify_otp', (req, res) => {
+    const { otp, email } = req.body;
+
+    if (!otp || !email) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'OTP and Email are required' 
+        });
+    }
+
+    const sqlQuery = 'SELECT otp FROM users WHERE email = ?';
+    db.query(sqlQuery, [email], (err, results) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Server error' 
+            });
+        }
+
+        if (results.length > 0) {
+            const storedOtp = results[0].otp;
+            
+            if (storedOtp === otp) {
+                res.json({ 
+                    success: true, 
+                    message: 'OTP verified successfully!' 
+                });
+            } else {
+                res.json({ 
+                    success: false, 
+                    message: 'Invalid OTP. Please try again.' 
+                });
+            }
+        } else {
+            res.json({ 
+                success: false, 
+                message: 'Email not found.' 
+            });
+        }
+    });
+});
 
 
 const PORT = process.env.PORT || 3000;

@@ -188,6 +188,8 @@ background-color: rgb(124, 38, 38);
 
         function showAttributes() {
             const attributesDiv = document.getElementById('attributes');
+            const sortedStudents = [...students].sort((a, b) => a.regdNo.localeCompare(b.regdNo));
+
             attributesDiv.innerHTML = `
                 <table>
                     <tr>
@@ -195,7 +197,7 @@ background-color: rgb(124, 38, 38);
                         <th>Name</th>
                         <th>Attendance Percentage</th>
                     </tr>
-                    ${students.map(student => `
+                    ${sortedStudents.map(student => `
                         <tr>
                             <td>${student.regdNo}</td>
                             <td>${student.name}</td>

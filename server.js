@@ -335,6 +335,17 @@ app.post('/add-student', (req, res) => {
                 console.error(err);
                 return res.json({ success: false, message: 'Failed to add student' });
             }
+            return res.json({ 
+                success: true, 
+                message: 'New student added ',
+                studentDetails: {
+                    regdNo,
+                    name,
+                    branch,
+                    technicalAttendance,
+                    nonTechnicalAttendance
+                }
+            });
         });
     });
 });

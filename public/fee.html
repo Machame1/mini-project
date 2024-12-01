@@ -4,60 +4,266 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fee Payment Details</title>
-    
     <style>
+       
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
         h1 {
-            color: #333;
             text-align: center;
-        }
-        .branch-select, .export-button {
+            font-size: 2.5rem;
             margin-bottom: 20px;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        
+        .branch-select {
+            margin-bottom: 20px;
+            margin-left: 20px ;
             display: flex;
-            justify-content: center;
+            align-items: center;
+            gap: 15px;
         }
-        select, button {
+        
+        .branch-select label {
+            font-size: 1.2rem;
+        }
+        
+        select {
             padding: 10px;
-            font-size: 16px;
-            margin: 0 5px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
         }
+        
+        select:hover {
+            transform: scale(1.05);
+            background: #fff;
+            color: #2575fc;
+        }
+        
+        button {
+            background: #6a11cb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #2575fc;
+            transform: scale(1.1);
+        }
+        
         table {
-            width: 100%;
+            width: 95%;
             border-collapse: collapse;
-            margin-top: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            animation: slideIn 1.5s ease-in-out;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
             border-radius: 5px;
             overflow: hidden;
         }
+        
         th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
-            transition: background-color 0.2s;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #fff;
+            cursor: pointer;
         }
+        
         th {
-            background-color: rgb(87, 157, 87);
-            color: white;
+            background: rgba(255, 255, 255, 0.2);
         }
-        tr:hover {
-            background-color: #f1f1f1;
+        
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
         }
+        
         .paid {
             color: green;
             text-transform: uppercase;
         }
+        
         .pending {
             color: red;
             text-transform: uppercase;
         }
+        
         .no-data {
             text-align: center;
             color: #888;
         }
+        
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            display: none;
+            z-index: 1000;
+            animation: popIn 0.5s ease;
+        }
+        
+        .popup.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        .popup-header h2 {
+            font-size: 1.5rem;
+            color: #444;
+        }
+        
+        .close {
+            font-size: 20px;
+            cursor: pointer;
+            color: #fff;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        
+        .close:hover {
+            color: #e63946;
+            transform: rotate(90deg);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            color: #fff;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            border-color: #6a11cb;
+            background: rgba(255, 255, 255, 0.4);
+        }
+        
+        .form-group button {
+            width: 100%;
+            padding: 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        
+        .form-group button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            z-index: 999;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        .deleteBtn {
+            background: red;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .deleteBtn:hover {
+            background: darkred;
+            transform: scale(1.1);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes popIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
     </style>
 </head>
 <body>
@@ -73,83 +279,177 @@
             <option value="CAI">CAI</option>
             <option value="CSD">CSD</option>
         </select>
-        <button id="exportBtn">Export to CSV</button> 
+        <button class="btn" id="addStudentBtn">Add Student</button>
     </div>
     
     <table id="feeTable">
         <thead>
             <tr>
-                <th>Student ID</th>
-                <th>Username</th>
+                <th>Regd No</th>
                 <th>Student Name</th>
                 <th>Branch</th>
                 <th>Phone No</th>
                 <th>Amount</th>
                 <th>Payment Status</th>
-                <th>Created At</th>
-                <th>Updated At</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
 
+    <div class="popup" id="addStudentPopup">
+        <div class="popup-header">
+            <h2>Add Student</h2>
+            <span class="close" id="closePopup">&times;</span>
+        </div>
+        <form id="addStudentForm">
+            <div class="form-group">
+                <label for="RegdNo">Regd No</label>
+                <input type="text" id="RegdNo" name="RegdNo" required>
+            </div>
+            <div class="form-group">
+                <label for="student_name">Student Name</label>
+                <input type="text" id="student_name" name="student_name" required>
+            </div>
+            <div class="form-group">
+                <label for="phone_no">Phone No</label>
+                <input type="text" id="phone_no" name="phone_no" required>
+            </div>
+            <div class="form-group">
+                <label for="branch">Branch</label>
+                <select id="branch" name="branch" required>
+                    <option value="CSE">CSE</option>
+                    <option value="AIML">AIML</option>
+                    <option value="CSM">CSM</option>
+                    <option value="CAI">CAI</option>
+                    <option value="CSD">CSD</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="number" id="amount" name="amount" required>
+            </div>
+            <div class="form-group">
+                <label for="payment_status">Payment Status</label>
+                <select id="payment_status" name="payment_status" required>
+                    <option value="Paid">Paid</option>
+                    <option value="Pending">Pending</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit">Add Student</button>
+            </div>
+        </form>
+    </div>
+
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", () => {
             const tableBody = document.querySelector("#feeTable tbody");
             const branchSelect = document.getElementById("branch");
-            const exportBtn = document.getElementById("exportBtn");
+            const addStudentBtn = document.getElementById("addStudentBtn");
+            const addStudentPopup = document.getElementById("addStudentPopup");
+            const closePopup = document.getElementById("closePopup");
+            const addStudentForm = document.getElementById("addStudentForm");
 
-            // Function to fetch fee data
-            function fetchFeeData(branch = '') {
-                fetch(`/fee_list?role=DEO&branch=${branch}`)
-                    .then(response => response.json())
-                    .then(data => {
+            const loadFees = (branch = "") => {
+                fetch(`/fee_list${branch ? `?branch=${branch}` : ""}`)
+                    .then((res) => res.json())
+                    .then((data) => {
                         tableBody.innerHTML = "";
-                        if (Array.isArray(data) && data.length) {
-                            data.forEach(row => {
-                                const tr = document.createElement("tr");
-                                tr.innerHTML = `
-                                    <td>${row.student_id}</td>
-                                    <td>${row.username}</td>
-                                    <td>${row.student_name}</td>
-                                    <td>${row.branch}</td>
-                                    <td>${row.phone_no}</td>
-                                    <td>${row.amount}</td>
-                                    <td class="${row.payment_status === 'Paid' ? 'paid' : 'pending'}">${row.payment_status}</td>
-                                    <td>${new Date(row.created_at).toLocaleString()}</td>
-                                    <td>${new Date(row.updated_at).toLocaleString()}</td>
-                                `;
-                                tableBody.appendChild(tr);
-                            });
+                        if (data.length === 0) {
+                            const noDataRow = document.createElement("tr");
+                            noDataRow.innerHTML = `<td colspan="7" class="no-data">No Fee Details Found</td>`;
+                            tableBody.appendChild(noDataRow);
                         } else {
-                            tableBody.innerHTML = "<tr><td colspan='9' class='no-data'>No fee data available.</td></tr>";
+                            data.forEach((fee) => {
+                                const row = document.createElement("tr");
+                                row.innerHTML = `
+                                    <td>${fee.RegdNo}</td> 
+                                    <td>${fee.student_name}</td>
+                                    <td>${fee.branch}</td>
+                                    <td>${fee.phone_no}</td>
+                                    <td>${fee.amount}</td>
+                                    <td class="${fee.payment_status.toLowerCase()}">${fee.payment_status}</td>
+                                    <td>
+                                        <button class="deleteBtn" data-regdno="${fee.RegdNo}">Delete</button>
+                                    </td>
+                                `;
+                                tableBody.appendChild(row);
+                            });
+            
+                            // Add event listeners to delete buttons after the rows are appended
+                            const deleteButtons = document.querySelectorAll(".deleteBtn");
+                            deleteButtons.forEach((button) =>
+                                button.addEventListener("click", handleDelete)
+                            );
+                        }
+                    });
+            };
+            
+
+            const togglePopup = (state) => {
+                addStudentPopup.classList.toggle("active", state);
+            };
+
+            branchSelect.addEventListener("change", () => {
+                loadFees(branchSelect.value);
+            });
+
+            addStudentBtn.addEventListener("click", () => {
+                togglePopup(true);
+            });
+
+            closePopup.addEventListener("click", () => {
+                togglePopup(false);
+            });
+
+            addStudentForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const formData = new FormData(addStudentForm);
+                const data = Object.fromEntries(formData);
+
+                fetch("/add_fee", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                })
+                    .then((res) => res.json())
+                    .then((result) => {
+                        if (result.success) {
+                            alert(result.message);
+                            togglePopup(false);
+                            addStudentForm.reset();
+                            loadFees(branchSelect.value);
+                        } else {
+                            alert(result.message);
                         }
                     })
-                    .catch(error => console.error("Error fetching fee data:", error));
-            }
-
-            fetchFeeData();
-
-            branchSelect.addEventListener('change', function () {
-                const selectedBranch = this.value; 
-                fetchFeeData(selectedBranch);
+                    .catch((err) => console.error("Error:", err));
             });
+            const handleDelete = (e) => {
+                const RegdNo = e.target.getAttribute("data-regdno");  // Get RegdNo from the data-regdno attribute
+                if (!RegdNo) {
+                    alert('Invalid registration number');
+                    return;
+                }
+                if (confirm(`Are you sure you want to delete the fee record for Registration No. ${RegdNo}?`)) {
+                    fetch(`/delete_fee/${RegdNo}`, { method: "DELETE" })
+            .then((res) => res.json())
+            .then((result) => {
+                if (result.message) {
+                    alert(result.message);
+                    loadFees();  // Reload the fee records
+                } else {
+                    alert(result.error || "An error occurred");
+                }
+            })
+            .catch((err) => console.error("Error:", err));
+    }
+};
+            
 
-            exportBtn.addEventListener("click", function () {
-                const rows = Array.from(tableBody.querySelectorAll("tr"));
-                const csvContent = "data:text/csv;charset=utf-8," 
-                    + rows.map(row => Array.from(row.querySelectorAll("td"))
-                    .map(cell => cell.innerText).join(",")).join("\n");
-                const encodedUri = encodeURI(csvContent);
-                const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", "fee_payment_details.csv");
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            });
+            // Initial load
+            loadFees();
         });
     </script>
-    
 </body>
 </html>

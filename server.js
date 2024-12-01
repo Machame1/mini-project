@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
@@ -10,13 +9,14 @@ const app = express();
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+const mysql = require('mysql2');
 // Database configuration
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'mavasari@1928',
-    database: 'user_accounts'
+    database: 'user_accounts',
+    connectionLimit: 100
 });
 
 db.connect(err => {
@@ -558,8 +558,80 @@ app.post('/verify_otp', (req, res) => {
         }
     });
 });
+app.get('/fee_list', (req, res) => {
+    const { branch, page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
+    const query = branch
+        ? "SELECT * FROM fee_payments WHERE branch = ? LIMIT ? OFFSET ?"
+        : "SELECT * FROM fee_payments LIMIT ? OFFSET ?";
+
+    const values = branch ? [branch, parseInt(limit), parseInt(offset)] : [parseInt(limit), parseInt(offset)];
+
+    db.query(query, values, (err, results) => {
+        if (err) {
+            console.error('Error fetching fee data:', err);
+            return res.status(500).json({
+                success: false,
+                message: 'Error fetching fee data',
+            });
+        }
+        res.json(results);
+    });
+});
+
+// Add fee details
+app.post('/add_fee', (req, res) => {
+    const { RegdNo, student_name, phone_no, branch, amount, payment_status } = req.body;
+
+    if (!RegdNo || !student_name || !phone_no || !branch || amount == null || !payment_status) {
+        return res.status(400).json({
+            success: false,
+            message: 'All fields are required',
+        });
+    }
+
+    const query = 'INSERT INTO fee_payments (RegdNo, student_name, phone_no, branch, amount, payment_status) VALUES (?, ?, ?, ?, ?, ?)';
 
 
+    db.query(query, [RegdNo, student_name, phone_no, branch, amount, payment_status], (err) => {
+        if (err) {
+            console.error('Error adding fee details:', err);
+            return res.status(500).json({
+                success: false,
+                message: 'Error adding fee details',
+            });
+        }
+
+        res.status(201).json({
+            success: true,
+            message: 'student fee added',
+        });
+    });
+});
+
+// Delete fee details by ID
+app.delete('/delete_fee/:RegdNo', (req, res) => {
+    const regdNo = req.params.RegdNo;
+
+    if (!regdNo) {
+        return res.status(400).json({ error: "RegdNo is required" });
+    }
+
+    // Delete the fee payment record from fee_payments table
+    const sql = 'DELETE FROM fee_payments WHERE RegdNo = ?';
+    db.query(sql, [regdNo], (err, result) => {
+        if (err) {
+            console.error("Error deleting fee payment:", err);
+            return res.status(500).json({ error: "Failed to delete the fee payment record" });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "No record found with that RegdNo" });
+        }
+
+        res.status(200).json({ message: "student deleted " });
+    });
+});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

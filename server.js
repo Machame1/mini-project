@@ -632,6 +632,33 @@ app.delete('/delete_fee/:RegdNo', (req, res) => {
         res.status(200).json({ message: "student deleted " });
     });
 });
+app.get("/get_user_details/:RegdNo", (req, res) => {
+    const RegdNo = req.params.RegdNo;
+
+    // SQL query to join the 'users' and 'fee_payments' table based on RegdNo
+    const query = `
+        SELECT u.username AS RegdNo, u.fullname, u.branch
+        FROM users u
+        LEFT JOIN fee_payments f ON u.username = f.RegdNo
+        WHERE u.username = ?
+    `;
+
+    db.query(query, [RegdNo], (err, results) => {
+        if (err) {
+            res.status(500).json({ success: false, message: "Database error." });
+        } else if (results.length > 0) {
+            const user = results[0];
+            res.json({
+                success: true,
+                fullname: user.fullname,
+                branch: user.branch,
+            });
+        } else {
+            res.json({ success: false, message: "No user found with the provided Registration Number." });
+        }
+    });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

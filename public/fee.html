@@ -111,159 +111,179 @@
             color: #888;
         }
         
-        .popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            display: none;
-            z-index: 1000;
-            animation: popIn 0.5s ease;
-        }
-        
-        .popup.active {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .popup-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            width: 100%;
-        }
-        
-        .popup-header h2 {
-            font-size: 1.5rem;
-            color: #444;
-        }
-        
-        .close {
-            font-size: 20px;
-            cursor: pointer;
-            color: #fff;
-            transition: color 0.2s ease, transform 0.2s ease;
-        }
-        
-        .close:hover {
-            color: #e63946;
-            transform: rotate(90deg);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-            width: 100%;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 1rem;
-            color: #fff;
-        }
-        
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px;
-            font-size: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            
-            outline: none;
-            transition: all 0.3s ease;
-        }
-        
-        .form-group input:focus, .form-group select:focus {
-            border-color: #6a11cb;
-            background: rgba(255, 255, 255, 0.4);
-        }
-        
-        .form-group button {
-            width: 100%;
-            padding: 12px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        
-        .form-group button:hover {
-            background-color: #218838;
-            transform: scale(1.05);
-        }
-        
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            display: none;
-            z-index: 999;
-        }
-        
-        .overlay.active {
-            display: block;
-        }
-        
-        .deleteBtn {
-            background: red;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .deleteBtn:hover {
-            background: darkred;
-            transform: scale(1.1);
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes popIn {
-            from {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-        
+       /* General styling for the popup and form */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 25px;
+    display: none;
+    z-index: 1000;
+    animation: popIn 0.5s ease;
+}
+
+.popup.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Header styling */
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.popup-header h2 {
+    font-size: 1.5rem;
+    color: #444;
+}
+.deleteBtn{
+    color: #fbf9f9;
+    background-color: #e63946;
+}
+.deleteBtn:hover{
+    background-color: #8a121c;
+    color: #ffffff;
+}
+
+.close {
+    font-size: 20px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.close:hover {
+    color: #e63946;
+    transform: rotate(90deg);
+}
+
+/* Form styling */
+.popup form {
+    padding: 20px;
+    width: 100%;
+}
+
+/* Styling for the form group with floating labels */
+.form-group {
+    position: relative;
+    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Input and select styling */
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px 10px;
+    font-size: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+/* Floating label styling */
+.form-group label {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 14px;
+    color: #d22828;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0 5px;
+}
+
+/* Floating label effect on focus or filled input */
+.form-group input:focus,
+.form-group input:not(:placeholder-shown),
+.form-group select:focus,
+.form-group select:not(:placeholder-shown) {
+    border-color: #007bff;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.form-group input:focus + label,
+.form-group input:not(:placeholder-shown) + label,
+.form-group select:focus + label,
+.form-group select:not(:placeholder-shown) + label {
+    top: -10px;
+    left: 10px;
+    font-size: 12px;
+    color: #ce1d1d;
+}
+
+/* Button styling */
+#fetchUserDetails {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 5px;
+    align-self: flex-start;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#fetchUserDetails:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+#fetchUserDetails:active {
+    background-color: #003f7f;
+    transform: scale(0.98);
+}
+
+#fetchUserDetails:focus {
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
+}
+
+/* Overlay styling */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    z-index: 999;
+}
+
+.overlay.active {
+    display: block;
+}
+
+/* Animations */
+@keyframes popIn {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -302,39 +322,42 @@
             <span class="close" id="closePopup">&times;</span>
         </div>
         <form id="addStudentForm">
-            <div class="form-group">
-                <label for="RegdNo">Regd No</label>
-                <input type="text" id="RegdNo" name="RegdNo" required>
-            </div>
-            <div class="form-group">
-                <label for="student_name">Student Name</label>
-                <input type="text" id="student_name" name="student_name" required>
-            </div>
-            <div class="form-group">
-                <label for="phone_no">Phone No</label>
-                <input type="text" id="phone_no" name="phone_no" required>
-            </div>
-            <div class="form-group">
-                <label for="branch">Branch</label>
-                <select id="branch" name="branch" required>
-                    <option value="CSE">CSE</option>
-                    <option value="AIML">AIML</option>
-                    <option value="CSM">CSM</option>
-                    <option value="CAI">CAI</option>
-                    <option value="CSD">CSD</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="amount">Amount</label>
-                <input type="number" id="amount" name="amount" required>
-            </div>
-            <div class="form-group">
-                <label for="payment_status">Payment Status</label>
-                <select id="payment_status" name="payment_status" required>
-                    <option value="Paid">Paid</option>
-                    <option value="Pending">Pending</option>
-                </select>
-            </div>
+    <div class="form-group">
+        <input type="text" id="RegdNo" name="RegdNo" required placeholder=" ">
+        <label for="RegdNo">Regd No</label>
+        <button type="button" id="fetchUserDetails">Search🔍</button>
+    </div>
+    <div class="form-group">
+        <input type="text" id="student_name" name="student_name" required placeholder=" ">
+        <label for="student_name">Student Name</label>
+    </div>
+    <div class="form-group">
+        <input type="text" id="phone_no" name="phone_no" required placeholder=" ">
+        <label for="phone_no">Phone No</label>
+    </div>
+    <div class="form-group">
+        <select id="branch" name="branch" required>
+            <option value="" disabled selected></option>
+            <option value="CSE">CSE</option>
+            <option value="AIML">AIML</option>
+            <option value="CSM">CSM</option>
+            <option value="CAI">CAI</option>
+            <option value="CSD">CSD</option>
+        </select>
+        <label for="branch">Branch</label>
+    </div>
+    <div class="form-group">
+        <input type="number" id="amount" name="amount" required placeholder=" ">
+        <label for="amount">Amount</label>
+    </div>
+    <div class="form-group">
+        <select id="payment_status" name="payment_status" required>
+            <option value="" disabled selected></option>
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+        </select>
+        <label for="payment_status">Payment Status</label>
+    </div>
             <div class="form-group">
                 <button type="submit">Add Student</button>
             </div>
@@ -450,6 +473,70 @@
             // Initial load
             loadFees();
         });
+        document.addEventListener("DOMContentLoaded", () => {
+            const studentNameInput = document.getElementById("student_name");
+            const branchInput = document.getElementById("branch");
+            const regdNoInput = document.getElementById("RegdNo"); // Assuming this is the input where RegdNo is entered
+        
+            // Fetch user details when the "Search" button is clicked
+            document.getElementById("fetchUserDetails").addEventListener("click", () => {
+                const regdNo = regdNoInput.value.trim(); // Get the RegdNo value from the input field
+                if (regdNo) {
+                    fetch(`/get_user_details/${encodeURIComponent(regdNo)}`)
+                        .then((response) => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then((data) => {
+                            if (data.success) {
+                                // Populate the form with the data
+                                studentNameInput.value = data.fullname || "";
+                                branchInput.value = data.branch || "";
+                            } else {
+                                alert(data.message || "No details found for the entered Registration Number.");
+                                studentNameInput.value = ""; // Clear the inputs if no data found
+                                branchInput.value = "";
+                            }
+                        })
+                        .catch((error) => {
+                            alert("Error fetching user details: " + error.message);
+                        });
+                } else {
+                    alert("Please enter a Registration Number.");
+                }
+            });
+        });
+        
+        
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("addStudentForm");
+    const closeButton = document.getElementById("closePopup");
+    const modal = document.getElementById("formModal"); // Ensure this exists in your HTML
+
+    // Function to close the form modal and reset the form
+    const closeForm = () => {
+        if (modal) {
+            modal.style.display = "none"; // Hide the modal
+        }
+        form.reset(); // Reset the form fields
+    };
+
+    // Handle "Close" button click
+    if (closeButton) {
+        closeButton.addEventListener("click", closeForm);
+    }
+
+    // Handle form submission
+    form.addEventListener("submit", (event) => {
+        event.preventDefault(); // Prevent default form submission behavior
+
+                closeForm();
+    });
+});
+
+
     </script>
 </body>
 </html>

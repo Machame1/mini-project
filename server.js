@@ -658,6 +658,29 @@ app.get("/get_user_details/:RegdNo", (req, res) => {
         }
     });
 });
+app.get('/get_fee_details', (req, res) => {
+    const username = req.query.username; // Get username from the request
+
+    if (!username) {
+        return res.json({ success: false, message: 'Username is required' });
+    }
+
+    // Fetch fee details using username (which matches RegdNo in the fee_payments table)
+    const feeQuery = 'SELECT * FROM fee_payments WHERE RegdNo = ?';
+
+    db.query(feeQuery, [username], (err, feeResults) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ success: false, message: 'Database error' });
+        }
+
+        if (feeResults.length > 0) {
+            res.json({ success: true, details: feeResults[0] });
+        } else {
+            res.json({ success: false, message: 'No fee details found' });
+        }
+    });
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

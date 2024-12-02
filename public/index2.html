@@ -223,6 +223,98 @@
             0% { opacity: 0; }
             100% { opacity: 1; }
         }
+        #feeDetails {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 90%;
+            max-width: 500px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+            text-align: center;
+        }
+
+        #feeDetails.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        #feeDetailsOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        #feeDetailsOverlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        #closeFeeDetails {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        #closeFeeDetails:hover {
+            color: #333;
+        }
+
+        .fee-detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .fee-detail-row strong {
+            color: #333;
+            min-width: 150px;
+            text-align: left;
+        }
+
+        .fee-detail-row span {
+            color: #666;
+            text-align: right;
+        }
+
+        #feeStatus {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        #feeStatus.paid {
+            color: green;
+        }
+
+        #feeStatus.pending {
+            color: orange;
+        }
+
+        #feeStatus.overdue {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -239,16 +331,52 @@
     <section>
         <nav>
             <ul>
-                <li><a href="#" id="crt-attendence" onclick="goToAttendance()">CRT (attendance)</a></li><br>
+                <li><a href="#" id="crt-attendence" onclick="goToAttendance()">CRT Attendance</a></li><br>
                 <li><a href="#">MOCK TEST</a></li><br>
                 <li><a href="#">PLACEMENT STATUS</a></li><br>
-                <li><a href="#">FEE PAYMENT</a></li><br>
+                <li><a href="#" id="feePaymentLink">FEE PAYMENT</a></li><br>
                 <li id="add-student-link" style="display:none;"><a href="newstudent.html">Add New Student</a></li>
 
             </ul>
         </nav>
     </section>
-    
+    <div id="feeDetailsOverlay"></div>
+
+    <!-- Fee Details Modal -->
+    <div id="feeDetails">
+        <button id="closeFeeDetails">&times;</button>
+        <h3>Fee Details</h3>
+        
+        <div class="fee-detail-row">
+            <strong>Regd No:</strong>
+            <span id="feeRegdNo"></span>
+        </div>
+        
+        <div class="fee-detail-row">
+            <strong>Student Name:</strong>
+            <span id="feeStudentName"></span>
+        </div>
+        
+        <div class="fee-detail-row">
+            <strong>Branch:</strong>
+            <span id="feeBranch"></span>
+        </div>
+        
+        <div class="fee-detail-row">
+            <strong>Phone:</strong>
+            <span id="feePhone"></span>
+        </div>
+        
+        <div class="fee-detail-row">
+            <strong>Amount:</strong>
+            <span id="feeAmount"></span>
+        </div>
+        
+        <div class="fee-detail-row">
+            <strong>Status:</strong>
+            <span id="feeStatus"></span>
+        </div>
+    </div>
     
     <footer>
         <div class="marquee">
@@ -315,7 +443,71 @@
     
         checkUserRole();
 
-        
+        document.addEventListener("DOMContentLoaded", () => {
+            const feePaymentLink = document.getElementById("feePaymentLink");
+            const feeDetailsContainer = document.getElementById("feeDetails");
+            const feeDetailsOverlay = document.getElementById("feeDetailsOverlay");
+            const closeFeeDetailsBtn = document.getElementById("closeFeeDetails");
+
+            // Function to close fee details
+            function closeFeeDetails() {
+                feeDetailsContainer.classList.remove('show');
+                feeDetailsOverlay.classList.remove('show');
+            }
+
+            // Close button event listener
+            closeFeeDetailsBtn.addEventListener('click', closeFeeDetails);
+
+            // Overlay click to close
+            feeDetailsOverlay.addEventListener('click', closeFeeDetails);
+
+            // Fee Payment Link Click Event
+            feePaymentLink.addEventListener("click", (event) => {
+                event.preventDefault();
+                const username = localStorage.getItem("username");
+
+                if (username) {
+                    fetch(`/get_fee_details?username=${username}`)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.success) {
+                                // Populate fee details
+                                document.getElementById("feeRegdNo").textContent = data.details.RegdNo;
+                                document.getElementById("feeStudentName").textContent = data.details.student_name;
+                                document.getElementById("feeBranch").textContent = data.details.branch;
+                                document.getElementById("feePhone").textContent = data.details.phone_no;
+                                document.getElementById("feeAmount").textContent = data.details.amount;
+                                
+                                // Set status with conditional styling
+                                const feeStatusElement = document.getElementById("feeStatus");
+                                feeStatusElement.textContent = data.details.payment_status;
+                                feeStatusElement.className = ''; // Reset classes
+                                
+                                // Add status-specific class
+                                if (data.details.payment_status.toLowerCase() === 'paid') {
+                                    feeStatusElement.classList.add('paid');
+                                } else if (data.details.payment_status.toLowerCase() === 'pending') {
+                                    feeStatusElement.classList.add('pending');
+                                } else {
+                                    feeStatusElement.classList.add('overdue');
+                                }
+
+                                // Show fee details with animation
+                                feeDetailsContainer.classList.add('show');
+                                feeDetailsOverlay.classList.add('show');
+                            } else {
+                                alert(data.message || "Unable to fetch fee details.");
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error fetching fee details:", error);
+                            alert("Error fetching fee details. Please try again later.");
+                        });
+                } else {
+                    alert("Username not found in localStorage.");
+                }
+            });
+        });
     </script>
 </body>
 </html>

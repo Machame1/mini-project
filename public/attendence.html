@@ -443,25 +443,24 @@ form {
         </div>
 
         <div class="table-container" id="table-container" style="display:none;">
-
-            <h2 id="topic-name"></h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Dates</th>
-                        <th>Conducted Classes</th>
-                        <th>Attended Classes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td id="topic-dates"></td>
-                        <td>10</td>
-                        <td>8</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <h2 id="topic-name"></h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Dates</th>
+                <th>Conducted Classes</th>
+                <th>Attended Classes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="topic-dates"></td>
+                <td id="conducted-classes"></td>
+                <td id="attended-classes"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
     </div>
 
     <script>
@@ -489,11 +488,13 @@ form {
         
         }
         
-        function showTable(topic, dates) {
+        function showTable(topic, dates, conductedClasses, attendedClasses) {
             document.getElementById('topic-name').innerText = topic;
             document.getElementById('topic-dates').innerText = dates;
+            document.getElementById('conducted-classes').innerText = conductedClasses;
+            document.getElementById('attended-classes').innerText = attendedClasses;
             document.getElementById('table-container').style.display = 'block';
-        } 
+        }
 
     async function getuserdata() {
         try {

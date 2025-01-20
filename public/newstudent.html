@@ -8,17 +8,13 @@
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
             background: linear-gradient(45deg, #4caf50, #8bc34a, #ffeb3b, #ff5722);
             background-size: 400% 400%;
             animation: gradientAnimation 15s ease infinite;
         }
-
-        /* Background gradient animation */
+        
         @keyframes gradientAnimation {
             0% { background-position: 0% 50%; }
             25% { background-position: 50% 0%; }
@@ -26,93 +22,181 @@
             75% { background-position: 50% 100%; }
             100% { background-position: 0% 50%; }
         }
-
+        
         .container {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            padding: 40px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            animation: fadeInUp 1s ease-in-out;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            margin: 20px auto;
         }
-
+        
         h2 {
             color: #333;
-            font-size: 24px;
-            margin-bottom: 20px;
+            font-size: 28px;
+            margin-bottom: 30px;
+            text-align: center;
             font-weight: bold;
             text-transform: uppercase;
         }
-
+        
         form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            display: grid;
+            gap: 20px;
+            padding: 0 20px;
         }
-
-        input, select, button {
-            padding: 14px;
+        
+        /* Form fields styling */
+        input, select {
+            width: 100%;
+            padding: 12px;
             font-size: 16px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fff;
             transition: all 0.3s ease;
-            outline: none;
+            box-sizing: border-box;
         }
-
+        
+        /* Labels styling */
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 14px;
+            text-align: left;
+        }
+        
+        /* Field groups */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        /* Focus states */
         input:focus, select:focus {
             border-color: #4CAF50;
-            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.2);
+            outline: none;
         }
-
+        
+        /* Submit button styling */
         button {
             background-color: #4CAF50;
             color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
         }
-
+        
         button:hover {
             background-color: #45a049;
-            transform: translateY(-3px);
-            animation: pulseButton 1s infinite;
+            transform: translateY(-2px);
         }
-
+        
         button:active {
-            background-color: #388e3c;
             transform: translateY(1px);
         }
-
+        
+        /* Message styling */
         #addStudentMessage {
             margin-top: 20px;
-            font-weight: bold;
-            transition: color 0.3s ease;
-        }
-
-        /* Fade-in from the bottom */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Pulse effect on the submit button */
-        @keyframes pulseButton {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        /* Alert box */
-        .alert {
-            padding: 20px;
-            background-color: #4CAF50;
-            color: white;
-            margin-top: 20px;
+            padding: 10px;
             border-radius: 5px;
             text-align: center;
-            display: none;
+            font-weight: bold;
+        }
+        
+        /* Alert box styling */
+        .alert {
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            animation: alertFadeIn 0.5s ease-in-out;
+        }
+        
+        .alert.success {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .alert.error {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 20px;
+                margin: 10px auto;
+            }
+        
+            form {
+                padding: 0 10px;
+            }
+        
+            input, select, button {
+                padding: 10px;
+                font-size: 14px;
+            }
+        
+            h2 {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+        }
+        
+        /* Date input specific styling */
+        input[type="date"] {
+            min-height: 45px;
+            background-color: #fff;
+        }
+        
+        /* Number input styling */
+        input[type="number"] {
+            min-height: 45px;
+        }
+        
+        /* Select dropdown styling */
+        select {
+            min-height: 45px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+        
+        /* Placeholder styling */
+        ::placeholder {
+            color: #999;
+            opacity: 1;
+        }
+        
+        /* Field validation visual feedback */
+        input:invalid, select:invalid {
+            border-color: #ff6b6b;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Fade-in animation for the alert */
@@ -126,26 +210,125 @@
     <div class="container">
         <h2>Add New Student</h2>
         <form id="addStudentForm">
-            <input type="text" id="regdNo" placeholder="Registration Number" required>
-            <input type="text" id="name" placeholder="Full Name" required>
-            <select id="branch" required>
-                <option value="">Select Branch</option>
-                <option value="CAI">CAI</option>
-                <option value="CSE">CSE</option>
-                <option value="CSM">CSM</option>
-                <option value="AIML">AIML</option>
-                <option value="CSD">CSD</option>
-            </select>
-            <input type="number" id="technicalAttendance" placeholder="Technical Attendance (%)" required>
-            <input type="number" id="nonTechnicalAttendance" placeholder="Non-Technical Attendance (%)" required>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="regdNo">Registration Number</label>
+                    <input type="text" id="regdNo" placeholder="Enter registration number" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" placeholder="Enter full name" required>
+                </div>
+            </div>
+    
+            <div class="form-group">
+                <label for="branch">Branch</label>
+                <select id="branch" required>
+                    <option value="">Select Branch</option>
+                    <option value="CAI">CAI</option>
+                    <option value="CSE">CSE</option>
+                    <option value="CSM">CSM</option>
+                    <option value="AIML">AIML</option>
+                    <option value="CSD">CSD</option>
+                </select>
+            </div>
+    
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="technicalAttendance">Technical Attendance (%)</label>
+                    <input type="number" id="technicalAttendance" placeholder="Enter technical attendance" required>
+                </div>
+                <div class="form-group">
+                    <label for="nonTechnicalAttendance">Non-Technical Attendance (%)</label>
+                    <input type="number" id="nonTechnicalAttendance" placeholder="Enter non-technical attendance" required>
+                </div>
+            </div>
+    
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="topicType">Topic Type</label>
+                    <select id="topicType" onchange="populateTopics()" required>
+                        <option value="">Select Topic Type</option>
+                        <option value="technical">Technical</option>
+                        <option value="non-technical">Non-Technical</option>
+                    </select>
+                </div>
+            </div>
+    
+            <div id="topicDetailsContainer"></div>
+    
             <button type="submit">Add Student</button>
         </form>
-
         <div id="addStudentMessage"></div>
-        <div class="alert" id="alertMessage">New student added successfully!</div>
+        <div class="alert" id="alertMessage"></div>
     </div>
 
     <script>
+        const technicalTopics = [
+            'Python',
+            'C Language',
+            'DSA',
+            'Computer Networks',
+            'Java',
+            'OOPS Concept',
+            'DBMS',
+            'OS'
+        ];
+
+        const nonTechnicalTopics = [
+            'Ratio and Proportion',
+            'Profit and Loss',
+            'Coding and Decoding',
+            'Partnerships',
+            'LCM and HCF',
+            'Simple Interest',
+            'Averages',
+            'Distance, Time and Speed'
+        ];
+
+        function populateTopics() {
+            const topicType = document.getElementById('topicType').value;
+            const topicDetailsContainer = document.getElementById('topicDetailsContainer');
+            topicDetailsContainer.innerHTML = ''; // Clear previous topic details
+
+            let topics = [];
+            if (topicType === 'technical') {
+                topics = technicalTopics;
+            } else if (topicType === 'non-technical') {
+                topics = nonTechnicalTopics;
+            }
+
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Topic</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Conducted Classes</th>
+                        <th>Attended Classes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            `;
+            const tbody = table.querySelector('tbody');
+
+            topics.forEach(topic => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${topic}</td>
+                    <td><input type="date" id="${topic}-startDate" name="${topic}-startDate" required></td>
+                    <td><input type="date" id="${topic}-endDate" name="${topic}-endDate" required></td>
+                    <td><input type="number" id="${topic}-conductedClasses" name="${topic}-conductedClasses" placeholder="Enter number of conducted classes" required></td>
+                    <td><input type="number" id="${topic}-attendedClasses" name="${topic}-attendedClasses" placeholder="Enter number of attended classes" required></td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            topicDetailsContainer.appendChild(table);
+        }
+
         document.getElementById('addStudentForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
@@ -155,9 +338,21 @@
             const branch = document.getElementById('branch').value;
             const technicalAttendance = document.getElementById('technicalAttendance').value;
             const nonTechnicalAttendance = document.getElementById('nonTechnicalAttendance').value;
+            const topicType = document.getElementById('topicType').value;
+
+            // Collect topic details
+            const topicDetails = [];
+            const topics = topicType === 'technical' ? technicalTopics : nonTechnicalTopics;
+            topics.forEach(topic => {
+                const startDate = document.getElementById(`${topic}-startDate`).value;
+                const endDate = document.getElementById(`${topic}-endDate`).value;
+                const conductedClasses = document.getElementById(`${topic}-conductedClasses`).value;
+                const attendedClasses = document.getElementById(`${topic}-attendedClasses`).value;
+                topicDetails.push({ topic, startDate, endDate, conductedClasses, attendedClasses });
+            });
 
             // Validate inputs
-            if (!regdNo || !name || !branch || technicalAttendance === '' || nonTechnicalAttendance === '') {
+            if (!regdNo || !name || !branch || technicalAttendance === '' || nonTechnicalAttendance === '' || !topicType) {
                 document.getElementById('addStudentMessage').innerText = 'All fields are required and cannot be empty';
                 document.getElementById('addStudentMessage').style.color = '#D8000C'; // Error color
                 return;
@@ -173,7 +368,9 @@
                         name,
                         branch,
                         technicalAttendance,
-                        nonTechnicalAttendance
+                        nonTechnicalAttendance,
+                        topicType,
+                        topicDetails
                     })
                 });
 

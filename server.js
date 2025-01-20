@@ -635,7 +635,6 @@ app.delete('/delete_fee/:RegdNo', (req, res) => {
 app.get("/get_user_details/:RegdNo", (req, res) => {
     const RegdNo = req.params.RegdNo;
 
-    // SQL query to join the 'users' and 'fee_payments' table based on RegdNo
     const query = `
         SELECT u.username AS RegdNo, u.fullname, u.branch
         FROM users u

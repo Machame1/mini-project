@@ -247,7 +247,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="topicType">Topic Type</label>
-                    <select id="topicType" onchange="populateTopics()" required>
+                    <select id="topicType" required>
                         <option value="">Select Topic Type</option>
                         <option value="technical">Technical</option>
                         <option value="non-technical">Non-Technical</option>
@@ -329,10 +329,13 @@
             topicDetailsContainer.appendChild(table);
         }
 
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('topicType').addEventListener('change', populateTopics);
+        });
+
         document.getElementById('addStudentForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
-            // Capture form data
             const regdNo = document.getElementById('regdNo').value;
             const name = document.getElementById('name').value;
             const branch = document.getElementById('branch').value;
@@ -340,7 +343,6 @@
             const nonTechnicalAttendance = document.getElementById('nonTechnicalAttendance').value;
             const topicType = document.getElementById('topicType').value;
 
-            // Collect topic details
             const topicDetails = [];
             const topics = topicType === 'technical' ? technicalTopics : nonTechnicalTopics;
             topics.forEach(topic => {
@@ -351,7 +353,6 @@
                 topicDetails.push({ topic, startDate, endDate, conductedClasses, attendedClasses });
             });
 
-            // Validate inputs
             if (!regdNo || !name || !branch || technicalAttendance === '' || nonTechnicalAttendance === '' || !topicType) {
                 document.getElementById('addStudentMessage').innerText = 'All fields are required and cannot be empty';
                 document.getElementById('addStudentMessage').style.color = '#D8000C'; // Error color
@@ -359,7 +360,6 @@
             }
 
             try {
-                // Send POST request to backend
                 const response = await fetch('/add-student', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -374,7 +374,6 @@
                     })
                 });
 
-                // Handle response
                 const data = await response.json();
                 const messageElement = document.getElementById('addStudentMessage');
                 messageElement.innerText = data.message;
@@ -383,18 +382,17 @@
                     messageElement.style.color = '#006400'; // Success color
                     document.getElementById('addStudentForm').reset(); // Clear form
                     
-                    // Show the success alert with animation
                     const alertMessage = document.getElementById('alertMessage');
                     alertMessage.style.display = 'block';
                     alertMessage.style.animation = 'alertFadeIn 1s ease-in-out';
                     setTimeout(() => { alertMessage.style.display = 'none'; }, 3000); // Hide after 3 seconds
                 } else {
-                    messageElement.style.color = '#D8000C'; // Error color
+                    messageElement.style.color = '#D8000C'; 
                 }
             } catch (error) {
                 console.error('Error adding student:', error);
                 document.getElementById('addStudentMessage').innerText = 'Error adding student';
-                document.getElementById('addStudentMessage').style.color = '#D8000C'; // Error color
+                document.getElementById('addStudentMessage').style.color = '#D8000C'; 
             }
         });
     </script>
